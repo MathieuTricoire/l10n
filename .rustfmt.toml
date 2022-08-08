@@ -1,0 +1,3 @@
+newline_style = "Unix"
+wrap_comments = true
+normalize_comments = true

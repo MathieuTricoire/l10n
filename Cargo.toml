@@ -1,0 +1,18 @@
+[package]
+name = "l10n"
+version = "0.0.0"
+description = "Opiniated localization library built upon fluent project."
+authors = ["Mathieu Tricoire <mathieu@tricoi.re>"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+categories = ["localization", "internationalization"]
+keywords = ["l10n", "localization", "i18n", "internationalization", "macros"]
+edition = "2021"
+rust-version = "1.56"
+
+[dependencies]
+l10n_core = { version = "0.0.0", path = "core" }
+l10n_impl = { version = "0.0.0", path = "impl" }
+
+[workspace]
+members = ["core", "impl"]
