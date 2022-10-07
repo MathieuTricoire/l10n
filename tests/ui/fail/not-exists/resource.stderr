@@ -1,0 +1,17 @@
+error: resource "unknown" not exists
+ --> tests/ui/fail/not-exists/resource.rs:6:22
+  |
+6 |     let _ = message!("unknown", "welcome");
+  |                      ^^^^^^^^^
+
+error: resource "unknown" not exists
+  --> tests/ui/fail/not-exists/resource.rs:10:16
+   |
+10 | #[l10n_message("unknown", "welcome")]
+   |                ^^^^^^^^^
+
+error: resource "unknown" not exists
+  --> tests/ui/fail/not-exists/resource.rs:14:16
+   |
+14 | #[l10n_message("unknown", "state")]
+   |                ^^^^^^^^^

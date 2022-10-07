@@ -1,3 +1,3 @@
 # l10n_core
 
-In progress...
+Core crate for [`l10n`](https://crates.io/crates/l10n)

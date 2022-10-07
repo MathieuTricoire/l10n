@@ -1,0 +1,2 @@
+[l10n]
+paths = { default = "$ROOT/l10n_dev", test = "$ROOT/l10n_test" }

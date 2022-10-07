@@ -1,0 +1,5 @@
+error: attribute notation like `.attribute` is only available if a key is set on the enum
+  --> tests/ui/fail/derive/enum-undefined-message-id.rs:10:20
+   |
+10 |     #[l10n_message(".online")]
+   |                    ^^^^^^^^^

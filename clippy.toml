@@ -1,0 +1,2 @@
+# Keep in sync with Cargo.toml files, clippy.toml and .github/workflows/ci.yml
+msrv = "1.56"

@@ -1,0 +1,5 @@
+error: missing functions: DAY, TIME
+ --> tests/ui/fail/functions/missing.rs:8:5
+  |
+8 |     functions: {
+  |     ^^^^^^^^^

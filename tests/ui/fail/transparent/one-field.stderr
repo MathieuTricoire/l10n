@@ -1,0 +1,35 @@
+error: #[l10n_message(transparent)] requires exactly one field
+ --> tests/ui/fail/transparent/one-field.rs:8:16
+  |
+8 | #[l10n_message(transparent)]
+  |                ^^^^^^^^^^^
+
+error: #[l10n_message(transparent)] requires exactly one field
+  --> tests/ui/fail/transparent/one-field.rs:12:16
+   |
+12 | #[l10n_message(transparent)]
+   |                ^^^^^^^^^^^
+
+error: #[l10n_message(transparent)] requires exactly one field
+  --> tests/ui/fail/transparent/one-field.rs:16:16
+   |
+16 | #[l10n_message(transparent)]
+   |                ^^^^^^^^^^^
+
+error: #[l10n_message(transparent)] requires exactly one field
+  --> tests/ui/fail/transparent/one-field.rs:24:20
+   |
+24 |     #[l10n_message(transparent)]
+   |                    ^^^^^^^^^^^
+
+error: #[l10n_message(transparent)] requires exactly one field
+  --> tests/ui/fail/transparent/one-field.rs:30:20
+   |
+30 |     #[l10n_message(transparent)]
+   |                    ^^^^^^^^^^^
+
+error: #[l10n_message(transparent)] requires exactly one field
+  --> tests/ui/fail/transparent/one-field.rs:36:20
+   |
+36 |     #[l10n_message(transparent)]
+   |                    ^^^^^^^^^^^

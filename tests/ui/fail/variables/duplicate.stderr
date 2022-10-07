@@ -1,0 +1,17 @@
+error: argument "first-name" already set
+  --> tests/ui/fail/variables/duplicate.rs:10:9
+   |
+10 |         "first-name" = "Turing"
+   |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+error: argument "first-name" already set
+  --> tests/ui/fail/variables/duplicate.rs:15:58
+   |
+15 | #[l10n_message("home", "welcome", "first-name" = "Alan", "first-name" = "Turing")]
+   |                                                          ^^^^^^^^^^^^^^^^^^^^^^^
+
+error: argument "reason" already set
+  --> tests/ui/fail/variables/duplicate.rs:25:44
+   |
+25 |     #[l10n_message(".busy", "reason" = .0, "reason" = .1)]
+   |                                            ^^^^^^^^^^^^^

@@ -1,0 +1,5 @@
+error: function duplicate
+  --> tests/ui/fail/functions/duplicate.rs:12:9
+   |
+12 |         "DAY": fake_function,
+   |         ^^^^^

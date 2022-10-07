@@ -1,0 +1,3 @@
+[l10n]
+locales = ["en"]
+path = "$ROOT/l10n"

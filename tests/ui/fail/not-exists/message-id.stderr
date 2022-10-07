@@ -1,0 +1,23 @@
+error: message id: "greeting", not exists for locale "en"
+ --> tests/ui/fail/not-exists/message-id.rs:6:30
+  |
+6 |     let _ = message!("home", "greeting");
+  |                              ^^^^^^^^^^
+
+error: message id: "greeting", not exists for locale "en"
+  --> tests/ui/fail/not-exists/message-id.rs:10:24
+   |
+10 | #[l10n_message("home", "greeting")]
+   |                        ^^^^^^^^^^
+
+error: message id: "online", not exists for locale "en"
+  --> tests/ui/fail/not-exists/message-id.rs:16:20
+   |
+16 |     #[l10n_message("online")]
+   |                    ^^^^^^^^
+
+error: message id: "status", not exists for locale "en"
+  --> tests/ui/fail/not-exists/message-id.rs:21:24
+   |
+21 | #[l10n_message("home", "status")]
+   |                        ^^^^^^^^

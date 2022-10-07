@@ -1,0 +1,7 @@
+error: missing mandatory locale directory: en
+ --> tests/ui/fail/missing-mandatory-locale/missing-mandatory-locale.rs:1:1
+  |
+1 | l10n::init!();
+  | ^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `l10n::init` (in Nightly builds, run with -Z macro-backtrace for more info)

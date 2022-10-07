@@ -1,0 +1,47 @@
+on:
+  push:
+  pull_request:
+  schedule: [cron: "50 3 * * *"]
+
+name: CI
+
+jobs:
+  build_and_test:
+    name: Test Suite
+    strategy:
+      matrix:
+        rust-version:
+          - nightly
+          - stable
+          # Keep in sync with Cargo.toml files, clippy.toml and .github/workflows/ci.yml
+          - 1.56
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    if: ${{ !contains(github.event.head_commit.message, '#skipci') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust-version }}
+          default: true
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --workspace
+      - name: Test feature flag "allow-incomplete"
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --features allow-incomplete -- ui trybuild=tests/ui/pass/feature-allow-incomplete

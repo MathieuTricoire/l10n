@@ -1,0 +1,9 @@
+[l10n]
+locales = [
+    "en",
+    { main = "en-GB", fallback = "en" },
+    { main = "en-CA", fallback = "en-GB" },
+    "fr",
+    { main = "fr-CA", fallback = "fr" },
+]
+path = "$ROOT/default_l10n"

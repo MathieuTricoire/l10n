@@ -1,0 +1,4 @@
+[submodule "fluent-rs"]
+	path = fluent-rs
+	url = https://github.com/MathieuTricoire/fluent-rs
+	branch = temp-merge-264-271

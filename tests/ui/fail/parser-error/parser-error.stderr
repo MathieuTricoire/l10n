@@ -1,0 +1,17 @@
+error: parsing errors: [
+           ParserError {
+               pos: 1..2,
+               slice: Some(
+                   0..1,
+               ),
+               kind: ExpectedToken(
+                   '=',
+               ),
+           },
+       ]
+ --> tests/ui/fail/parser-error/parser-error.rs:1:1
+  |
+1 | l10n::init!();
+  | ^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `l10n::init` (in Nightly builds, run with -Z macro-backtrace for more info)

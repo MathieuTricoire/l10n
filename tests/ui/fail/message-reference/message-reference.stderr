@@ -1,0 +1,5 @@
+error: missing arguments: "bar-var", "baz-var", "foo-var" for resource: "resource" and key: "baz"
+ --> tests/ui/fail/message-reference/message-reference.rs:6:34
+  |
+6 |     let _ = message!("resource", "baz");
+  |                                  ^^^^^

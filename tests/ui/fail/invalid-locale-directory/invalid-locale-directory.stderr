@@ -1,0 +1,7 @@
+error: impossible to parse directory `not-a-locale` as a language identifier, (error: Parser error: Invalid subtag)
+ --> tests/ui/fail/invalid-locale-directory/invalid-locale-directory.rs:1:1
+  |
+1 | l10n::init!();
+  | ^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `l10n::init` (in Nightly builds, run with -Z macro-backtrace for more info)

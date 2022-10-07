@@ -1,0 +1,5 @@
+error: incomplete arguments syntax is not authorized because the feature flag "allow-incomplete" is not set
+ --> tests/ui/fail/incomplete/derive-struct.rs:8:57
+  |
+8 | #[l10n_message("home", "state.busy", "reason" = reason, ...)]
+  |                                                         ^^^

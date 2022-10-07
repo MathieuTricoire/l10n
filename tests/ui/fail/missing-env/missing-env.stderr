@@ -1,0 +1,7 @@
+error: l10n path for environment "prod" is not set in the configuration
+ --> tests/ui/fail/missing-env/missing-env.rs:1:1
+  |
+1 | l10n::init!();
+  | ^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `l10n::init` (in Nightly builds, run with -Z macro-backtrace for more info)

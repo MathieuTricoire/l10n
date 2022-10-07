@@ -1,0 +1,5 @@
+error: incomplete arguments syntax is not authorized because the feature flag "allow-incomplete" is not set
+  --> tests/ui/fail/incomplete/message.rs:10:9
+   |
+10 |         ...
+   |         ^^^

@@ -1,0 +1,5 @@
+error: invalid field (expected: "formatter", "transform", "use_isolating" or "functions")
+ --> tests/ui/fail/init/invalid-field.rs:2:5
+  |
+2 |     format: || {}
+  |     ^^^^^^
