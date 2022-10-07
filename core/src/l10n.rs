@@ -1,5 +1,3 @@
-//! TODO Doc...
-
 use crate::locales::Locales;
 use crate::resource::L10nResource;
 use crate::utils::{for_locales, grammar_number, locales_to_string, values_to_string};

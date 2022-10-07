@@ -9,7 +9,7 @@
 [Rustc badge]: https://img.shields.io/badge/rustc-1.56+-lightgray.svg
 [Rustc]: https://blog.rust-lang.org/2021/10/21/Rust-1.56.0.html
 
-[`l10n`] is a high level and opinionated localization crate built upon the excellent [`fluent-bundle`](https://crates.io/crates/fluent-bundle) crate and the [Fluent project](https://projectfluent.org) and inspired by the [`thiserror`](https://crates.io/crates/thiserror) crate.
+[`l10n`] is a high level and opinionated localization crate built upon the excellent [`fluent-bundle`](https://crates.io/crates/fluent-bundle) crate, the [Fluent project](https://projectfluent.org) and inspired by the [`thiserror`](https://crates.io/crates/thiserror) crate.
 
 The goal of this crate is to ease project localization and provide compile time checks (message exists, mandatory arguments are set, functions are defined).
 
@@ -78,24 +78,28 @@ Then in the root of your application or library initialize `l10n` (this create a
 ```rust
 use l10n::unic_langid::langid;
 use l10n::{message, message_args, L10nMessage};
+use l10n::fluent_bundle::{FluentValue, FluentArgs}; // for functions, not necessary for this example
 
-l10n::init!();
+l10n::init!({
+    // not necessary for this example
+    functions: { "TIME": |_: &[FluentValue<'_>], _: &FluentArgs| FluentValue::None }
+});
 
 fn main() {
     let lang = langid!("fr");
 
     let username = "Alice";
     let greeting = message!("app", "greeting", "first-name" = username);
-    println!("{}", greeting.translate(&lang)); // "Bonjour Alice !"
+    assert_eq!(greeting.translate(&lang), "Bonjour \u{2068}Alice\u{2069} !");
 
     let status = Status::Busy {
         reason: "Meeting".to_string(),
     };
-    println!("{}", status.translate(&lang)); // "Non disponible (Meeting)"
-    println!(
-        "{}",
-        status.translate_with_args(&lang, Some(&message_args!("gender" => "female")))
-    ); // "Occupée (Meeting)"
+    assert_eq!(status.translate(&lang), "\u{2068}Non disponible\u{2069} (\u{2068}Meeting\u{2069})");
+    assert_eq!(
+        status.translate_with_args(&lang, Some(&message_args!("gender" => "female"))),
+        "\u{2068}Occupée\u{2069} (\u{2068}Meeting\u{2069})"
+    );
 }
 
 #[derive(L10nMessage)]
@@ -105,8 +109,8 @@ enum Status {
     Online,
     #[l10n_message(".offline")]
     Offline,
-    #[l10n_message(".busy", .reason, "gender" = "other")]
-    Busy(String),
+    #[l10n_message(".busy", reason, "gender" = "other")]
+    Busy { reason: String },
 }
 ```
 
@@ -235,10 +239,6 @@ locales = [
   { main = "fr-CA", fallback = "fr" },
 ]
 ```
-
-### Deriving `L10nMessage`
-
-Coming...
 
 ---
 
