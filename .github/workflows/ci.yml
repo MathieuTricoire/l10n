@@ -1,9 +1,15 @@
+name: CI
+
 on:
   push:
   pull_request:
   schedule: [cron: "50 3 * * *"]
 
-name: CI
+permissions:
+  contents: read
+
+env:
+  RUSTFLAGS: -Dwarnings
 
 jobs:
   build_and_test:
