@@ -6,6 +6,7 @@ authors = ["Mathieu Tricoire <mathieu@tricoi.re>"]
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/MathieuTricoire/l10n"
 repository = "https://github.com/MathieuTricoire/l10n"
+documentation = "https://docs.rs/l10n"
 readme = "README.md"
 categories = ["localization", "internationalization"]
 keywords = ["l10n", "localization", "i18n", "internationalization", "macros"]
