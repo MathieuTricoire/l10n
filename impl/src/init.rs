@@ -153,42 +153,44 @@ impl InitInput {
 impl Parse for InitInput {
     fn parse(input: ParseStream) -> Result<Self> {
         let mut init_input = Self::default();
-        if input.is_empty() {
-            return Ok(init_input);
-        }
 
-        let content;
-        braced!(content in input);
-        let fields: Punctuated<Field, Comma> = content.parse_terminated(Field::parse)?;
-        for field in fields {
-            match field {
-                Field::Formatter(ident, formatter) => {
-                    if init_input.formatter.is_none() {
-                        init_input.formatter = Some(formatter);
-                    } else {
-                        return Err(Error::new_spanned(ident, "duplicate `formatter` field"));
+        if !input.is_empty() {
+            let content;
+            braced!(content in input);
+            let fields: Punctuated<Field, Comma> = content.parse_terminated(Field::parse)?;
+            for field in fields {
+                match field {
+                    Field::Formatter(ident, formatter) => {
+                        if init_input.formatter.is_none() {
+                            init_input.formatter = Some(formatter);
+                        } else {
+                            return Err(Error::new_spanned(ident, "duplicate `formatter` field"));
+                        }
                     }
-                }
-                Field::Transform(ident, transform) => {
-                    if init_input.transform.is_none() {
-                        init_input.transform = Some(transform);
-                    } else {
-                        return Err(Error::new_spanned(ident, "duplicate `transform` field"));
+                    Field::Transform(ident, transform) => {
+                        if init_input.transform.is_none() {
+                            init_input.transform = Some(transform);
+                        } else {
+                            return Err(Error::new_spanned(ident, "duplicate `transform` field"));
+                        }
                     }
-                }
-                Field::UseIsolating(ident, use_isolating) => {
-                    if init_input.use_isolating.is_none() {
-                        init_input.use_isolating = Some(use_isolating);
-                    } else {
-                        return Err(Error::new_spanned(ident, "duplicate `use_isolating` field"));
+                    Field::UseIsolating(ident, use_isolating) => {
+                        if init_input.use_isolating.is_none() {
+                            init_input.use_isolating = Some(use_isolating);
+                        } else {
+                            return Err(Error::new_spanned(
+                                ident,
+                                "duplicate `use_isolating` field",
+                            ));
+                        }
                     }
-                }
-                Field::Functions(ident, functions) => {
-                    if init_input.functions.is_none() {
-                        init_input.functions_key = Some(ident);
-                        init_input.functions = Some(functions);
-                    } else {
-                        return Err(Error::new_spanned(ident, "duplicate `functions` field"));
+                    Field::Functions(ident, functions) => {
+                        if init_input.functions.is_none() {
+                            init_input.functions_key = Some(ident);
+                            init_input.functions = Some(functions);
+                        } else {
+                            return Err(Error::new_spanned(ident, "duplicate `functions` field"));
+                        }
                     }
                 }
             }

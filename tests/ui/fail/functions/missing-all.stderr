@@ -1,0 +1,7 @@
+error: missing functions: DAY, NUMBER, TIME
+ --> tests/ui/fail/functions/missing-all.rs:1:1
+  |
+1 | l10n::init!();
+  | ^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `l10n::init` (in Nightly builds, run with -Z macro-backtrace for more info)
