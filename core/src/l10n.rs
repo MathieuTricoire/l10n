@@ -857,7 +857,6 @@ mod tests {
         })
         .unwrap();
 
-        // let locales = Locales::try_from([("en", None), ("fr", None)]).unwrap();
         let locales = Locales::try_from([("en", None)]).unwrap();
 
         let translator_builder = L10nBuilder::parse(temp_dir.path(), Some(locales)).unwrap();
@@ -937,29 +936,4 @@ mod tests {
         ]);
         assert_eq!(translator.required_functions(), expected);
     }
-
-    /*
-    fn build_named_resources(
-        values: &[((String, LanguageIdentifier), &str)],
-    ) -> (NamedResources, Vec<FluentResource>) {
-        let mut named_resources: NamedResources = HashMap::new();
-        let mut resources = vec![];
-
-        for ((name, lang), source) in values {
-            let resource_index = resources.len();
-            resources.push(FluentResource::try_new(source.to_string()).unwrap());
-
-            if let Some(resources) = named_resources.get_mut(name) {
-                resources.insert(lang.clone(), resource_index);
-            } else {
-                named_resources.insert(
-                    name.clone(),
-                    HashMap::from([(lang.clone(), resource_index)]),
-                );
-            }
-        }
-
-        (named_resources, resources)
-    }
-    */
 }
