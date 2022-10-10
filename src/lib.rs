@@ -55,10 +55,10 @@
 //! _This example is not really relevant, it is just to show how to use l10n._
 //!
 //! ```rust
-//! use std::borrow::Cow;
-//! use l10n::unic_langid::langid;
 //! use l10n::fluent_bundle::{FluentArgs, FluentValue};
-//! use l10n::{message, message_args, L10nMessage};
+//! use l10n::unic_langid::langid;
+//! use l10n::L10nMessage;
+//! use std::borrow::Cow;
 //!
 //! fn l10n_transform(s: &str) -> Cow<str> {
 //!     Cow::from(s.replace("Occupée", "OcCuPéE🚫"))

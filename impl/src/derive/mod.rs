@@ -27,6 +27,7 @@ fn expand_struct(digest: StructDigest) -> TokenStream {
         ty_generics,
         where_clause,
         l10n_self_lifetime,
+        original_impl_generics,
     } = get_trait_data(digest.derive_input, digest.self_lifetime);
     let pat = fields_pat(&digest.fields);
     let translate_method_body = expand_translate_method_body(&digest.message, pat);
@@ -50,7 +51,7 @@ fn expand_struct(digest: StructDigest) -> TokenStream {
         };
         quote! {
             #[allow(unused_qualifications)]
-            impl #impl_generics std::convert::From<#from> for #ty #ty_generics #where_clause {
+            impl #original_impl_generics std::convert::From<#from> for #ty #ty_generics #where_clause {
                 #[allow(deprecated)]
                 fn from(source: #from) -> Self {
                     #ty { #from_member: #some_source }
@@ -60,7 +61,6 @@ fn expand_struct(digest: StructDigest) -> TokenStream {
     });
 
     quote! {
-        // #[allow(unused_qualifications)]
         impl #impl_generics #impl_trait for #ty #ty_generics #where_clause {
             #translate_method
         }
@@ -76,6 +76,7 @@ fn expand_enum(digest: EnumDigest) -> TokenStream {
         ty_generics,
         where_clause,
         l10n_self_lifetime,
+        original_impl_generics,
     } = get_trait_data(digest.derive_input, digest.l10n_self_lifetime);
 
     let mut from_impls: Vec<TokenStream> = vec![];
@@ -92,7 +93,7 @@ fn expand_enum(digest: EnumDigest) -> TokenStream {
             };
             from_impls.push(quote! {
                 #[allow(unused_qualifications)]
-                impl #impl_generics std::convert::From<#from> for #ty #ty_generics #where_clause {
+                impl #original_impl_generics std::convert::From<#from> for #ty #ty_generics #where_clause {
                     #[allow(deprecated)]
                     fn from(source: #from) -> Self {
                         #ty::#ident { #from_member: #some_source }
@@ -120,7 +121,6 @@ fn expand_enum(digest: EnumDigest) -> TokenStream {
     };
 
     quote! {
-        // #[allow(unused_qualifications)]
         impl #impl_generics #impl_trait for #ty #ty_generics #where_clause {
             #translate_method
         }
@@ -160,6 +160,7 @@ struct TraitData {
     ty_generics: TokenStream,
     where_clause: TokenStream,
     l10n_self_lifetime: Lifetime,
+    original_impl_generics: TokenStream,
 }
 
 fn get_trait_data(original: &DeriveInput, l10n_self_lifetime: Option<Lifetime>) -> TraitData {
@@ -179,8 +180,8 @@ fn get_trait_data(original: &DeriveInput, l10n_self_lifetime: Option<Lifetime>) 
             syn::Lifetime::new("'__l10n_result", Span::call_site()),
         )));
 
+    let (original_impl_generics, ty_generics, where_clause) = original.generics.split_for_impl();
     let (impl_generics, _, _) = generics.split_for_impl();
-    let (_, ty_generics, where_clause) = original.generics.split_for_impl();
 
     let impl_trait = spanned_impl_trait(original, &l10n_self_lifetime);
     let ty = &original.ident;
@@ -192,6 +193,7 @@ fn get_trait_data(original: &DeriveInput, l10n_self_lifetime: Option<Lifetime>) 
         ty_generics: ty_generics.to_token_stream(),
         where_clause: where_clause.to_token_stream(),
         l10n_self_lifetime,
+        original_impl_generics: original_impl_generics.to_token_stream(),
     }
 }
 
