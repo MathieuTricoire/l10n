@@ -1,35 +1,35 @@
 error: missing arguments: "first-name", "last-name" for resource: "home" and key: "welcome"
- --> tests/ui/fail/variables/missing.rs:6:30
+ --> tests/ui/fail/arguments/missing.rs:6:30
   |
 6 |     let _ = message!("home", "welcome");
   |                              ^^^^^^^^^
 
 error: missing arguments: "first-name", "last-name" for resource: "home" and key: "welcome"
- --> tests/ui/fail/variables/missing.rs:7:30
+ --> tests/ui/fail/arguments/missing.rs:7:30
   |
 7 |     let _ = message!("home", "welcome", "extra" = "value");
   |                              ^^^^^^^^^
 
 error: missing arguments: "first-name", "last-name" for resource: "home" and key: "welcome"
-  --> tests/ui/fail/variables/missing.rs:11:33
+  --> tests/ui/fail/arguments/missing.rs:11:33
    |
 11 | #[l10n_message("home", "welcome")]
    |                                 ^
 
 error: missing arguments: "last-name" for resource: "home" and key: "welcome"
-  --> tests/ui/fail/variables/missing.rs:15:75
+  --> tests/ui/fail/arguments/missing.rs:15:75
    |
 15 | #[l10n_message("home", "welcome", "first-name" = "Alan", "extra" = "value")]
    |                                                                           ^
 
 error: missing arguments: "gender", "reason" for resource: "home" and key: "state.busy"
-  --> tests/ui/fail/variables/missing.rs:25:27
+  --> tests/ui/fail/arguments/missing.rs:25:27
    |
 25 |     #[l10n_message(".busy")]
    |                           ^
 
 error: missing arguments: "gender" for resource: "home" and key: "state.busy"
-  --> tests/ui/fail/variables/missing.rs:38:68
+  --> tests/ui/fail/arguments/missing.rs:38:68
    |
 38 |     #[l10n_message(".busy", "reason" = "Working", "extra" = "value")]
    |                                                                    ^

@@ -1,17 +1,17 @@
 error: argument "reason" already set
- --> tests/ui/fail/variables/duplicate-shorthand.rs:7:52
+ --> tests/ui/fail/arguments/duplicate-shorthand.rs:7:52
   |
 7 |     let _ = message!("home", "state.busy", reason, *reason,);
   |                                                    ^^^^^^^
 
 error: argument "reason" already set
-  --> tests/ui/fail/variables/duplicate-shorthand.rs:11:47
+  --> tests/ui/fail/arguments/duplicate-shorthand.rs:11:47
    |
 11 | #[l10n_message("home", "state.busy", *reason, reason)]
    |                                               ^^^^^^
 
 error: argument "reason" already set
-  --> tests/ui/fail/variables/duplicate-shorthand.rs:23:37
+  --> tests/ui/fail/arguments/duplicate-shorthand.rs:23:37
    |
 23 |     #[l10n_message(".busy", reason, *reason)]
    |                                     ^^^^^^^
