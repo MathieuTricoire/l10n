@@ -23,6 +23,6 @@ fn main() {
 #[derive(L10nMessage)]
 #[l10n_message("home", "state")]
 enum State {
-    #[l10n_message(".busy", "reason" = .0, ...)]
+    #[l10n_message(".busy", "reason" = .0.as_str(), ...)]
     Busy(String),
 }
