@@ -1,6 +1,6 @@
 [package]
 name = "l10n"
-version = "0.1.0"
+version = "0.1.0-beta.1"
 description = "Opinionated localization library built upon fluent-bundle."
 authors = ["Mathieu Tricoire <mathieu@tricoi.re>"]
 license = "MIT OR Apache-2.0"
@@ -19,8 +19,8 @@ members = ["core", "impl"]
 exclude = ["fluent-rs"]
 
 [dependencies]
-l10n_core = { version = "=0.1.0", path = "core" }
-l10n_impl = { version = "=0.1.0", path = "impl" }
+l10n_core = { version = "=0.1.0-beta.1", path = "core" }
+l10n_impl = { version = "=0.1.0-beta.1", path = "impl" }
 once_cell = "1.13"
 
 [dev-dependencies]
