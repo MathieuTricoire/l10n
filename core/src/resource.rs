@@ -92,6 +92,8 @@ where
         if !errors.is_empty() {
             return Err(TranslateError::FormatErrors(errors));
         }
+        // TODO To remove once https://github.com/projectfluent/fluent-rs/pull/264 is merged and released
+        let translation = Cow::from(translation.into_owned());
         Ok(translation)
     }
 

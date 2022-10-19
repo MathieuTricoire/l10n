@@ -72,14 +72,14 @@ enum State {
 #[derive(L10nMessage)]
 #[l10n_message("home", "state")]
 enum Busy {
-    #[l10n_message(".busy", "reason" = .0, "gender" = .1)]
+    #[l10n_message(".busy", "reason" = .0.as_str(), "gender" = .1.as_str())]
     NotTimed(String, String),
     #[l10n_message(transparent)]
     Timed(#[l10n_from] BusyFor),
 }
 
 #[derive(L10nMessage)]
-#[l10n_message("home", "state.busy-for", reason, hours, gender)]
+#[l10n_message("home", "state.busy-for", "reason" = reason.as_str(), hours, "gender" = gender.as_str())]
 struct BusyFor {
     reason: String,
     hours: usize,

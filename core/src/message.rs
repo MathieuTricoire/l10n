@@ -1,5 +1,5 @@
 use crate::l10n::{L10n, TranslateError};
-use crate::UNEXPECTED_MESSAGE;
+use crate::{merge_args, UNEXPECTED_MESSAGE};
 use fluent_bundle::FluentArgs;
 use std::{borrow::Cow, fmt::Debug};
 use unic_langid::LanguageIdentifier;
@@ -36,15 +36,7 @@ impl<'translator, 'args> Message<'translator, 'args> {
     ) -> Result<Cow<'translator, str>, TranslateError> {
         match (self.args.as_ref(), args) {
             (Some(local_args), Some(overriding_args)) => {
-                // TODO There is probably something better to do performance wise,
-                // need to think about it and maybe propose a PR to fluent-bundle.
-                let mut args = FluentArgs::new();
-                for (key, value) in local_args.iter() {
-                    args.set(Cow::from(key), value.to_owned());
-                }
-                for (key, value) in overriding_args.iter() {
-                    args.set(Cow::from(key), value.to_owned());
-                }
+                let args = merge_args(&local_args, &overriding_args);
                 self.l10n
                     .try_translate_with_args(lang, self.resource, self.key, Some(&args))
             }

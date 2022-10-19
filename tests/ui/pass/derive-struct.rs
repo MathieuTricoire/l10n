@@ -20,7 +20,7 @@ fn main() {
 }
 
 #[derive(L10nMessage)]
-#[l10n_message("home", "welcome", "first-name" = first_name, "last-name" = last_name)]
+#[l10n_message("home", "welcome", "first-name" = first_name.as_str(), "last-name" = last_name.as_str())]
 struct Welcome {
     first_name: String,
     last_name: String,

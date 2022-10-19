@@ -19,14 +19,27 @@ Code repository: <https://github.com/MathieuTricoire/l10n>
 
 ## Installation
 
-_Note: [`l10n`] is not yet published on crates.io because some PRs need to be merged and released on [`fluent-bundle`](https://crates.io/crates/fluent-bundle) [#264](https://github.com/projectfluent/fluent-rs/pull/264) and [#271](https://github.com/projectfluent/fluent-rs/pull/271) which l10n depends on (and I don’t want to publish a fork of fluent-bundle on crates.io or add fluent-bundle fork code in my crate for now)_
+```toml
+[dependencies]
+l10n = "0.1.0-beta.1" }
+```
+
+MSRV: rustc 1.56+
+
+## Note
+
+This is marked as a "beta" version because `String` arguments are not supported as is, you need to write `"argument" = value.as_str()` instead of `"argument" = value` and because some polyfills are in place while waiting for PRs to be merged nor released in [`fluent-bundle`](https://crates.io/crates/fluent-bundle)
+
+If you want to use the latest version you can use the one from GitHub:
 
 ```toml
 [dependencies]
 l10n = { git = "https://github.com/MathieuTricoire/l10n.git" }
 ```
 
-MSRV: rustc 1.56+
+- String argument: [#251](https://github.com/projectfluent/fluent-rs/pull/251)
+- Lifetime issues for Cow: [#264](https://github.com/projectfluent/fluent-rs/pull/264)
+- Merge arguments: [#271](https://github.com/projectfluent/fluent-rs/pull/271) which l10n depends on_
 
 ## Quick start
 
@@ -111,7 +124,7 @@ enum Status {
     Online,
     #[l10n_message(".offline")]
     Offline,
-    #[l10n_message(".busy", reason, "gender" = "other")]
+    #[l10n_message(".busy", "reason" = reason.as_str(), "gender" = "other")]
     Busy { reason: String },
 }
 ```

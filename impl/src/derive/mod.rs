@@ -286,16 +286,16 @@ fn expand_translate_method_body(l10n: &Message, pat: Option<TokenStream>) -> Tok
                 let local_args = quote! {
                     let mut local_args = ::l10n::fluent_bundle::FluentArgs::new();
                     #set_local_args
-                    if let std::option::Option::Some(args) = args {
-                        for (key, value) in args.iter() {
-                            local_args.set(key, value.to_owned());
-                        }
-                    }
+                    let args = if let std::option::Option::Some(args) = args {
+                        ::l10n::merge_args(&local_args, &args)
+                    } else {
+                        local_args
+                    };
                 };
 
                 quote!({
                     #local_args
-                    crate::L10N.try_translate_with_args(locale, #resource, #key, std::option::Option::Some(&local_args))
+                    crate::L10N.try_translate_with_args(locale, #resource, #key, std::option::Option::Some(&args))
                 })
             }
         }
