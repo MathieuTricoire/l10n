@@ -1,8 +1,8 @@
 error: message value: "state", not defined for locale "en"
- --> tests/ui/fail/not-exists/message-id-value.rs:6:30
+ --> tests/ui/fail/not-exists/message-id-value.rs:6:36
   |
-6 |     let _ = message!("home", "state");
-  |                              ^^^^^^^
+6 |     let _ = l10n::message!("home", "state");
+  |                                    ^^^^^^^
 
 error: message value: "state", not defined for locale "en"
   --> tests/ui/fail/not-exists/message-id-value.rs:10:24

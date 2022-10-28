@@ -1,8 +1,8 @@
 error: argument "reason" already set
- --> tests/ui/fail/arguments/duplicate-shorthand.rs:7:52
+ --> tests/ui/fail/arguments/duplicate-shorthand.rs:7:58
   |
-7 |     let _ = message!("home", "state.busy", reason, *reason,);
-  |                                                    ^^^^^^^
+7 |     let _ = l10n::message!("home", "state.busy", reason, *reason,);
+  |                                                          ^^^^^^^
 
 error: argument "reason" already set
   --> tests/ui/fail/arguments/duplicate-shorthand.rs:11:47

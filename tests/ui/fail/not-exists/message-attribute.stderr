@@ -1,8 +1,8 @@
 error: attribute: "attribute", not exists on message id: "welcome", for locale "en"
- --> tests/ui/fail/not-exists/message-attribute.rs:6:30
+ --> tests/ui/fail/not-exists/message-attribute.rs:6:36
   |
-6 |     let _ = message!("home", "welcome.attribute");
-  |                              ^^^^^^^^^^^^^^^^^^^
+6 |     let _ = l10n::message!("home", "welcome.attribute");
+  |                                    ^^^^^^^^^^^^^^^^^^^
 
 error: attribute: "attribute", not exists on message id: "welcome", for locale "en"
   --> tests/ui/fail/not-exists/message-attribute.rs:10:24

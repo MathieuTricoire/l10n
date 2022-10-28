@@ -1,11 +1,11 @@
 use l10n::fluent_bundle::FluentArgs;
-use l10n::message;
 use l10n::unic_langid::langid;
+use l10n::L10nMessage;
 
 l10n::init!();
 
 fn main() {
-    let busy = message!(
+    let busy = l10n::message!(
         "home",
         "state.busy",
         "reason" = "Working",

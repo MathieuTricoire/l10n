@@ -1,9 +1,9 @@
-use l10n::{message, L10nMessage};
+use l10n::L10nMessage;
 
 l10n::init!();
 
 fn main() {
-    let _ = message!("unknown", "welcome");
+    let _ = l10n::message!("unknown", "welcome");
 }
 
 #[derive(L10nMessage)]
