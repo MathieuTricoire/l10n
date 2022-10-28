@@ -65,9 +65,9 @@ pub enum Gender {
     Other,
 }
 
-impl<'a> Into<FluentValue<'a>> for &'a Gender {
-    fn into(self) -> FluentValue<'a> {
-        FluentValue::String(Cow::from(match self {
+impl<'a> From<&'a Gender> for FluentValue<'a> {
+    fn from(val: &'a Gender) -> Self {
+        FluentValue::String(Cow::from(match val {
             Gender::Female => "female",
             Gender::Male => "male",
             Gender::Other => "other",
@@ -83,8 +83,8 @@ impl Time {
     }
 }
 
-impl<'a> Into<FluentValue<'a>> for &'a Time {
-    fn into(self) -> FluentValue<'a> {
-        FluentValue::String(Cow::from(format!("{}m", self.0)))
+impl<'a> From<&'a Time> for FluentValue<'a> {
+    fn from(val: &'a Time) -> Self {
+        FluentValue::String(Cow::from(format!("{}m", val.0)))
     }
 }

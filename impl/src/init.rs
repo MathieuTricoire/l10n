@@ -139,7 +139,7 @@ impl InitInput {
                 .functions_key
                 .as_ref()
                 .map(|v| v.span())
-                .unwrap_or(Span::call_site());
+                .unwrap_or_else(Span::call_site);
             return Err(Error::new(
                 span,
                 format!("missing functions: {}", missing_functions.join(", ")),

@@ -7,7 +7,7 @@ use syn::{
     braced, bracketed, parenthesized, token, Error, Ident, Index, LitInt, LitStr, Result, Token,
 };
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct MessageArgs {
     args: Vec<Argument>,
     incomplete: Option<Dot3>,
@@ -97,15 +97,6 @@ impl MessageArgs {
             if !current_argument_names.contains(argument.name()) {
                 self.args.push(argument.clone());
             }
-        }
-    }
-}
-
-impl Default for MessageArgs {
-    fn default() -> Self {
-        Self {
-            args: vec![],
-            incomplete: None,
         }
     }
 }
