@@ -1,14 +1,14 @@
 error: missing arguments: "first-name", "last-name" for resource: "home" and key: "welcome"
- --> tests/ui/fail/arguments/missing.rs:6:30
+ --> tests/ui/fail/arguments/missing.rs:6:36
   |
-6 |     let _ = message!("home", "welcome");
-  |                              ^^^^^^^^^
+6 |     let _ = l10n::message!("home", "welcome");
+  |                                    ^^^^^^^^^
 
 error: missing arguments: "first-name", "last-name" for resource: "home" and key: "welcome"
- --> tests/ui/fail/arguments/missing.rs:7:30
+ --> tests/ui/fail/arguments/missing.rs:7:36
   |
-7 |     let _ = message!("home", "welcome", "extra" = "value");
-  |                              ^^^^^^^^^
+7 |     let _ = l10n::message!("home", "welcome", "extra" = "value");
+  |                                    ^^^^^^^^^
 
 error: missing arguments: "first-name", "last-name" for resource: "home" and key: "welcome"
   --> tests/ui/fail/arguments/missing.rs:11:33

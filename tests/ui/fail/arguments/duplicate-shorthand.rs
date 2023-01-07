@@ -1,10 +1,10 @@
-use l10n::{message, L10nMessage};
+use l10n::L10nMessage;
 
 l10n::init!();
 
 fn main() {
     let reason = "reason".to_string();
-    let _ = message!("home", "state.busy", reason, *reason,);
+    let _ = l10n::message!("home", "state.busy", reason, *reason,);
 }
 
 #[derive(L10nMessage)]

@@ -138,14 +138,12 @@ impl<'a> VariantDigest<'a> {
     fn from_input(variant_input: Variant<'a>, enum_input: &Enum<'a>) -> Result<VariantDigest<'a>> {
         let from = get_from(&variant_input.fields)?;
 
-        if let Some(span) = variant_input
-            .l10n_attribute
-            .transparent
-            .or_else(|| match variant_input.l10n_attribute.attribute {
+        if let Some(span) = variant_input.l10n_attribute.transparent.or(
+            match variant_input.l10n_attribute.attribute {
                 None => enum_input.l10n_attribute.transparent,
                 _ => None,
-            })
-        {
+            },
+        ) {
             return if variant_input.fields.len() == 1 {
                 let field = field_to_ident(variant_input.fields.first().unwrap());
                 Ok(VariantDigest {
@@ -221,7 +219,7 @@ impl<'a> VariantDigest<'a> {
             variant_input
                 .l10n_attribute
                 .attribute
-                .map(|attr| attribute_closing_span(attr))
+                .map(attribute_closing_span)
                 .unwrap_or_else(|| variant_input.variant_input.ident.span()),
         )?;
 
@@ -267,9 +265,7 @@ fn missing_literal_message(
             &ts,
             &format!(
                 r#"expected a {} in place of the argument, example: `"{}", {}`"#,
-                expected,
-                example,
-                ts.to_string()
+                expected, example, ts
             ),
         ),
         _ => Error::new(
@@ -286,7 +282,7 @@ fn variant_or_enum_attribute_span(
     variant_attribute
         .map(|attr| attr.path.span())
         .or_else(|| enum_attribute.map(|attr| attr.path.span()))
-        .unwrap_or_else(|| Span::call_site())
+        .unwrap_or_else(Span::call_site)
 }
 
 fn attribute_closing_span(attr: &Attribute) -> Span {

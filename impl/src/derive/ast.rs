@@ -102,7 +102,7 @@ impl<'a> Variant<'a> {
     }
 }
 
-fn parse_l10n_attribute<'a>(attrs: &'a [Attribute]) -> Result<Option<L10nAttribute<'a>>> {
+fn parse_l10n_attribute(attrs: &[Attribute]) -> Result<Option<L10nAttribute<'_>>> {
     let mut l10n_attribute: Option<L10nAttribute> = None;
     for attr in attrs {
         if attr.path.is_ident("l10n_message") {
@@ -118,7 +118,7 @@ fn parse_l10n_attribute<'a>(attrs: &'a [Attribute]) -> Result<Option<L10nAttribu
     Ok(l10n_attribute)
 }
 
-fn _parse_l10n_attribute<'a>(attr: &'a Attribute) -> Result<L10nAttribute<'a>> {
+fn _parse_l10n_attribute(attr: &Attribute) -> Result<L10nAttribute<'_>> {
     syn::custom_keyword!(transparent);
 
     attr.parse_args_with(|input: ParseStream| {

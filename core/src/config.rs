@@ -1,6 +1,10 @@
 use crate::locales::Locales;
 use serde::{de::Error, Deserialize, Deserializer};
-use std::{collections::HashMap, env, fs, path::PathBuf};
+use std::{
+    collections::HashMap,
+    env, fs,
+    path::{Path, PathBuf},
+};
 use thiserror::Error;
 
 #[derive(Deserialize)]
@@ -46,7 +50,7 @@ impl Config {
                 .environments
                 .get(&environment)
                 .cloned()
-                .ok_or_else(|| ConfigError::MissingPathError(environment))
+                .ok_or(ConfigError::MissingPathError(environment))
         } else {
             Ok(self.paths.default.clone())
         }
@@ -70,7 +74,7 @@ impl<'de> Deserialize<'de> for Paths {
             Helper::Full(mut profiles) => {
                 let default = profiles
                     .remove("default")
-                    .ok_or(Error::missing_field("default"))?;
+                    .ok_or_else(|| Error::missing_field("default"))?;
                 Paths {
                     environments: profiles,
                     default,
@@ -103,7 +107,7 @@ pub fn config_file_path() -> Result<Option<PathBuf>, ConfigError> {
         if path.is_absolute() {
             return path
                 .canonicalize()
-                .map(|path| Some(path))
+                .map(Some)
                 .map_err(|source| ConfigError::ReadFile { path, source });
         }
     }
@@ -115,7 +119,7 @@ pub fn config_file_path() -> Result<Option<PathBuf>, ConfigError> {
         let path = root.join(l10n_config_file);
         return path
             .canonicalize()
-            .map(|path| Some(path))
+            .map(Some)
             .map_err(|source| ConfigError::ReadFile { path, source });
     }
 
@@ -166,7 +170,7 @@ fn deserialize_translator_config(source: &str) -> Result<Config, toml::de::Error
     Ok(toml::from_str::<'_, ConfigFile>(source)?.l10n)
 }
 
-fn replace_root_var_in_path(path: &mut PathBuf, root_path: &PathBuf) {
+fn replace_root_var_in_path(path: &mut PathBuf, root_path: &Path) {
     if !path.is_absolute() && path.starts_with("$ROOT") {
         let unprefixed_path = path.strip_prefix("$ROOT").unwrap();
         *path = match root_path.parent() {
@@ -213,7 +217,7 @@ mod tests {
                 .unwrap(),
             ),
         };
-        let actual = deserialize_translator_config(&config).unwrap();
+        let actual = deserialize_translator_config(config).unwrap();
         assert_eq!(actual, expected);
 
         let config = r#"
@@ -226,7 +230,7 @@ mod tests {
             },
             locales: None,
         };
-        let actual = deserialize_translator_config(&config).unwrap();
+        let actual = deserialize_translator_config(config).unwrap();
         assert_eq!(actual, expected);
 
         let config = r#"
@@ -240,7 +244,7 @@ mod tests {
             },
             locales: None,
         };
-        let actual = deserialize_translator_config(&config).unwrap();
+        let actual = deserialize_translator_config(config).unwrap();
         assert_eq!(actual, expected);
     }
 
@@ -250,7 +254,7 @@ mod tests {
             [l10n]
             paths = { production = "/var/l10n" }
         "#};
-        let error = deserialize_translator_config(&config).unwrap_err();
+        let error = deserialize_translator_config(config).unwrap_err();
         assert_eq!(
             &error.to_string(),
             "missing field `default` for key `l10n.paths` at line 1 column 1"
@@ -265,7 +269,7 @@ mod tests {
                 { another = "key" },
             ]
         "#};
-        let error = deserialize_translator_config(&config).unwrap_err();
+        let error = deserialize_translator_config(config).unwrap_err();
         assert_eq!(
             &error.to_string(),
             r#"missing field `main` for key `l10n.locales` at line 3 column 5"#
@@ -280,7 +284,7 @@ mod tests {
                 { main = "fr-CA", fallback = "fr" },
             ]
         "#};
-        let error = deserialize_translator_config(&config).unwrap_err();
+        let error = deserialize_translator_config(config).unwrap_err();
         assert_eq!(
             &error.to_string(),
             r#"invalid value: string "not-a-locale", expected a valid Unicode Language Identifier like "en-US" (Parser error: Invalid subtag) for key `l10n.locales` at line 3 column 34"#

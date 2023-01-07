@@ -1,8 +1,8 @@
 error: message id: "greeting", not exists for locale "en"
- --> tests/ui/fail/not-exists/message-id.rs:6:30
+ --> tests/ui/fail/not-exists/message-id.rs:6:36
   |
-6 |     let _ = message!("home", "greeting");
-  |                              ^^^^^^^^^^
+6 |     let _ = l10n::message!("home", "greeting");
+  |                                    ^^^^^^^^^^
 
 error: message id: "greeting", not exists for locale "en"
   --> tests/ui/fail/not-exists/message-id.rs:10:24

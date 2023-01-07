@@ -178,7 +178,7 @@ impl<'a> IntoIterator for &'a Locales {
     type IntoIter = std::slice::Iter<'a, LocaleEntry>;
 
     fn into_iter(self) -> Self::IntoIter {
-        (&self.locales).into_iter()
+        self.locales.iter()
     }
 }
 
