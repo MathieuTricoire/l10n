@@ -20,7 +20,7 @@ jobs:
           - nightly
           - stable
           # Keep in sync with Cargo.toml files, clippy.toml and .github/workflows/ci.yml
-          - 1.56
+          - 1.61
         os:
           - ubuntu-latest
           - windows-latest

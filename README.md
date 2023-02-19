@@ -6,8 +6,8 @@
 [CI]: https://github.com/MathieuTricoire/l10n/actions/workflows/ci.yml
 [Crate badge]: https://img.shields.io/crates/v/l10n.svg
 [Crate]: https://crates.io/crates/l10n
-[Rustc badge]: https://img.shields.io/badge/rustc-1.56+-lightgray.svg
-[Rustc]: https://blog.rust-lang.org/2021/10/21/Rust-1.56.0.html
+[Rustc badge]: https://img.shields.io/badge/rustc-1.61+-lightgray.svg
+[Rustc]: https://blog.rust-lang.org/2021/10/21/Rust-1.61.0.html
 
 [`l10n`] is a high level and opinionated localization crate built upon the excellent [`fluent-bundle`](https://crates.io/crates/fluent-bundle) crate, the [Fluent project](https://projectfluent.org) and inspired by the [`thiserror`](https://crates.io/crates/thiserror) crate.
 
@@ -41,7 +41,7 @@ l10n = { git = "https://github.com/MathieuTricoire/l10n.git" }
 l10n = "0.1
 ```
 
-MSRV: rustc 1.56+
+MSRV: rustc 1.61+
 
 ## Quick start
 

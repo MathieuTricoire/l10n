@@ -12,7 +12,7 @@ categories = ["localization", "internationalization"]
 keywords = ["l10n", "localization", "i18n", "internationalization", "macros"]
 edition = "2021"
 # Keep in sync with Cargo.toml files, clippy.toml and .github/workflows/ci.yml
-rust-version = "1.56"
+rust-version = "1.61"
 
 [dependencies]
 fluent-bundle = "0.15"
