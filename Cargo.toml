@@ -19,8 +19,8 @@ members = ["core", "impl"]
 exclude = ["fluent-rs"]
 
 [dependencies]
-l10n_core = { version = "=0.1.0", path = "core" }
-l10n_impl = { version = "=0.1.0", path = "impl" }
+l10n_core = { version = "0.1", path = "core" }
+l10n_impl = { version = "0.1", path = "impl" }
 once_cell = "1.13"
 
 [dev-dependencies]
