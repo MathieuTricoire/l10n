@@ -2,12 +2,12 @@
 
 [![CI badge]][CI] [![Crate badge]][Crate] [![Rustc badge]][Rustc]
 
-[CI badge]: https://img.shields.io/github/workflow/status/MathieuTricoire/l10n/CI/main
-[CI]: https://github.com/MathieuTricoire/l10n/actions?query=branch%3Amain
+[CI badge]: https://github.com/MathieuTricoire/l10n/actions/workflows/ci.yml/badge.svg
+[CI]: https://github.com/MathieuTricoire/l10n/actions/workflows/ci.yml
 [Crate badge]: https://img.shields.io/crates/v/l10n.svg
 [Crate]: https://crates.io/crates/l10n
-[Rustc badge]: https://img.shields.io/badge/rustc-1.56+-lightgray.svg
-[Rustc]: https://blog.rust-lang.org/2021/10/21/Rust-1.56.0.html
+[Rustc badge]: https://img.shields.io/badge/rustc-1.61+-lightgray.svg
+[Rustc]: https://blog.rust-lang.org/2021/10/21/Rust-1.61.0.html
 
 [`l10n`] is a high level and opinionated localization crate built upon the excellent [`fluent-bundle`](https://crates.io/crates/fluent-bundle) crate, the [Fluent project](https://projectfluent.org) and inspired by the [`thiserror`](https://crates.io/crates/thiserror) crate.
 
@@ -19,14 +19,14 @@ Code repository: <https://github.com/MathieuTricoire/l10n>
 
 ## Installation
 
-_Note: [`l10n`] is not yet published on crates.io because some PRs need to be merged and released on [`fluent-bundle`](https://crates.io/crates/fluent-bundle) [#264](https://github.com/projectfluent/fluent-rs/pull/264) and [#271](https://github.com/projectfluent/fluent-rs/pull/271) which l10n depends on (and I don’t want to publish a fork of fluent-bundle on crates.io or add fluent-bundle fork code in my crate for now)_
+_Note: [`l10n@0.1`] is available here: https://github.com/MathieuTricoire/l10n/tree/0.1_
 
 ```toml
 [dependencies]
 l10n = { git = "https://github.com/MathieuTricoire/l10n.git" }
 ```
 
-MSRV: rustc 1.56+
+MSRV: rustc 1.61+
 
 ## Quick start
 
