@@ -37,11 +37,11 @@ where
         self.bundles.insert(lang, bundle);
     }
 
-    pub fn translate<'a, 'args>(
+    pub fn translate<'a>(
         &'a self,
         locale: &LanguageIdentifier,
         key: &str,
-        args: Option<&'args FluentArgs>,
+        args: Option<&'_ FluentArgs>,
     ) -> Result<Cow<'a, str>, TranslateError> {
         let bundle =
             self.bundles
@@ -150,7 +150,7 @@ where
 trait ParseVariables {
     fn locale(&self) -> LanguageIdentifier;
 
-    fn get_pattern_from_key<'a>(&self, key: &'a str) -> Result<&Pattern<&str>, TranslateError>;
+    fn get_pattern_from_key(&self, key: &str) -> Result<&Pattern<&str>, TranslateError>;
 
     fn get_pattern<'a>(
         &self,
@@ -187,7 +187,7 @@ where
         self.locales.first().cloned().unwrap_or_default()
     }
 
-    fn get_pattern_from_key<'a>(&self, key: &'a str) -> Result<&Pattern<&str>, TranslateError> {
+    fn get_pattern_from_key(&self, key: &str) -> Result<&Pattern<&str>, TranslateError> {
         let (id, attribute) = key
             .split_once('.')
             .map(|(id, attribute)| (id, Some(attribute)))

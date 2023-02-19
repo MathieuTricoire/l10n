@@ -167,82 +167,80 @@ impl L10n {
         } = builder;
 
         let inner_translator = InnerL10n::new(fluent_resources, |fluent_resources| {
-            named_resources
-                .iter()
-                .map(|(name, _)| {
-                    let mut l10n_resource = L10nResource::new();
-                    for locale in locales.main_locales() {
-                        let locales_resolution = locales
-                            .locale_resolution_route(&locale)
-                            .expect("Unexpected error, `locale_resolution_route` should not be None in this context!");
-                        let mut inverted_locales_resolution = locales_resolution.clone();
-                        inverted_locales_resolution.reverse();
-                        let mut fl_bundle = FluentBundle::new_concurrent(
-                            locales_resolution.into_iter().cloned().collect(),
-                        );
+            named_resources.keys().map(|name| {
+                let mut l10n_resource = L10nResource::new();
+                for locale in locales.main_locales() {
+                    let locales_resolution = locales
+                        .locale_resolution_route(&locale)
+                        .expect("Unexpected error, `locale_resolution_route` should not be None in this context!");
+                    let mut inverted_locales_resolution = locales_resolution.clone();
+                    inverted_locales_resolution.reverse();
+                    let mut fl_bundle = FluentBundle::new_concurrent(
+                        locales_resolution.into_iter().cloned().collect(),
+                    );
 
-                        for fl_res in Self::global_unnamed_fluent_resources(
-                            &global_unnamed_resources,
-                            fluent_resources,
-                        ) {
-                            fl_bundle.add_resource_overriding(fl_res);
-                        }
+                    for fl_res in Self::global_unnamed_fluent_resources(
+                        &global_unnamed_resources,
+                        fluent_resources,
+                    ) {
+                        fl_bundle.add_resource_overriding(fl_res);
+                    }
 
-                        let mut relative_paths = vec![];
-                        let mut relative_path = Some(
-                            name.parse::<PathBuf>()
-                                .unwrap()
-                                .parent()
-                                .unwrap()
-                                .to_path_buf(),
-                        );
-                        while let Some(path) = relative_path {
-                            relative_paths.push(path.clone());
-                            relative_path = path.parent().map(|p| p.to_path_buf());
-                        }
-                        relative_paths.reverse();
+                    let mut relative_paths = vec![];
+                    let mut relative_path = Some(
+                        name.parse::<PathBuf>()
+                            .unwrap()
+                            .parent()
+                            .unwrap()
+                            .to_path_buf(),
+                    );
+                    while let Some(path) = relative_path {
+                        relative_paths.push(path.clone());
+                        relative_path = path.parent().map(|p| p.to_path_buf());
+                    }
+                    relative_paths.reverse();
 
-                        for relative_path in relative_paths {
-                            for locale in &inverted_locales_resolution {
-                                for fl_res in Self::unnamed_fluent_resources(
-                                    &relative_path,
-                                    locale,
-                                    &unnamed_resources,
-                                    fluent_resources,
-                                ) {
-                                    fl_bundle.add_resource_overriding(fl_res);
-                                }
-                            }
-                        }
-
+                    for relative_path in relative_paths {
                         for locale in &inverted_locales_resolution {
-                            if let Some(fl_res) = Self::named_fluent_resource(
-                                name,
+                            for fl_res in Self::unnamed_fluent_resources(
+                                &relative_path,
                                 locale,
-                                &named_resources,
+                                &unnamed_resources,
                                 fluent_resources,
                             ) {
                                 fl_bundle.add_resource_overriding(fl_res);
                             }
                         }
-
-                        fl_bundle.set_transform(transform);
-                        fl_bundle.set_formatter(formatter);
-                        fl_bundle.set_use_isolating(use_isolating);
-
-                        for (name, function) in functions.clone() {
-                            // Future improvement: only add functions to bundle when is needed
-                            fl_bundle
-                                .add_function(&name, function)
-                                .expect("Unexpected error, there should not be functions with same names");
-                        }
-
-                        l10n_resource.add_bundle(locale.to_owned(), fl_bundle);
                     }
 
-                    (name.to_string(), l10n_resource)
-                })
-                .collect()
+                    for locale in &inverted_locales_resolution {
+                        if let Some(fl_res) = Self::named_fluent_resource(
+                            name,
+                            locale,
+                            &named_resources,
+                            fluent_resources,
+                        ) {
+                            fl_bundle.add_resource_overriding(fl_res);
+                        }
+                    }
+
+                    fl_bundle.set_transform(transform);
+                    fl_bundle.set_formatter(formatter);
+                    fl_bundle.set_use_isolating(use_isolating);
+
+                    for (name, function) in functions.clone() {
+                        // Future improvement: only add functions to bundle when is needed
+                        fl_bundle
+                            .add_function(&name, function)
+                            .expect("Unexpected error, there should not be functions with same names");
+                    }
+
+                    l10n_resource.add_bundle(locale.to_owned(), fl_bundle);
+                }
+
+                (name.to_string(), l10n_resource)
+            })
+            .collect()
         });
 
         Ok(Self {
@@ -296,12 +294,12 @@ impl L10n {
         }
     }
 
-    pub fn try_translate_with_args<'a, 'b>(
+    pub fn try_translate_with_args<'a>(
         &'a self,
         lang: &LanguageIdentifier,
         resource: &str,
         key: &str,
-        args: Option<&FluentArgs<'b>>,
+        args: Option<&FluentArgs<'_>>,
     ) -> Result<Cow<'a, str>, TranslateError> {
         self.inner
             .borrow_dependent()
@@ -351,8 +349,8 @@ impl L10n {
         functions
     }
 
-    fn global_unnamed_fluent_resources<'r, 'a>(
-        global_unnamed_resources: &'a [ResourceIndex],
+    fn global_unnamed_fluent_resources<'r>(
+        global_unnamed_resources: &[ResourceIndex],
         fluent_resources: &'r [FluentResource],
     ) -> Vec<&'r FluentResource> {
         global_unnamed_resources
@@ -622,7 +620,7 @@ impl L10nBuilder {
                     self.add_named_resource(&name, relative_path, locale, resource);
                 }
             } else if entry_path.is_dir() {
-                self.parse_locale_directory(locale, locale_path, &relative_path.join(&name))?;
+                self.parse_locale_directory(locale, locale_path, &relative_path.join(name))?;
             }
         }
 
@@ -861,8 +859,8 @@ mod tests {
         let translator_builder = L10nBuilder::parse(temp_dir.path(), Some(locales)).unwrap();
         let actual_resources: HashSet<_> = translator_builder
             .named_resources
-            .iter()
-            .map(|(resource, _)| resource.to_string())
+            .keys()
+            .map(|resource| resource.to_string())
             .collect();
 
         let expected_resources = HashSet::from([

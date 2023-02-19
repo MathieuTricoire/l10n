@@ -1,6 +1,6 @@
 use crate::l10n::{L10n, TranslateError};
 use crate::l10n_message::L10nMessage;
-use crate::{merge_args, UNEXPECTED_MESSAGE};
+use crate::merge_args;
 use fluent_bundle::FluentArgs;
 use std::{borrow::Cow, fmt::Debug};
 use unic_langid::LanguageIdentifier;
@@ -37,7 +37,7 @@ impl<'l10n, 'args> L10nMessage<'args, 'l10n> for Message<'l10n, 'args> {
     ) -> Result<Cow<'l10n, str>, TranslateError> {
         match (self.args.as_ref(), args) {
             (Some(local_args), Some(overriding_args)) => {
-                let args = merge_args(&local_args, &overriding_args);
+                let args = merge_args(local_args, overriding_args);
                 self.l10n
                     .try_translate_with_args(locale, self.resource, self.key, Some(&args))
             }

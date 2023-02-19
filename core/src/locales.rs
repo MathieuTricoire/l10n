@@ -79,10 +79,7 @@ impl Locales {
         self.locales.is_empty()
     }
 
-    fn find_with_main_locale<'a, 'b>(
-        &'a self,
-        locale: &'b LanguageIdentifier,
-    ) -> Option<&'a LocaleEntry> {
+    fn find_with_main_locale<'a>(&'a self, locale: &LanguageIdentifier) -> Option<&'a LocaleEntry> {
         self.locales
             .iter()
             .find(|LocaleEntry { main: i_locale, .. }| locale == i_locale)
@@ -142,9 +139,9 @@ impl Locales {
     }
 
     // Only for main locales
-    pub fn locale_resolution_route<'a, 'b>(
+    pub fn locale_resolution_route<'a>(
         &'a self,
-        locale: &'b LanguageIdentifier,
+        locale: &LanguageIdentifier,
     ) -> Option<Vec<&'a LanguageIdentifier>> {
         let tr_locale = self.find_with_main_locale(locale)?;
         let mut resolution = vec![&tr_locale.main];

@@ -262,15 +262,15 @@ fn missing_literal_message(
 ) -> Error {
     match argument_ts {
         Some(ts) => Error::new_spanned(
-            &ts,
-            &format!(
+            ts,
+            format!(
                 r#"expected a {} in place of the argument, example: `"{}", {}`"#,
                 expected, example, ts
             ),
         ),
         _ => Error::new(
             attribute_closing_span(attribute),
-            &format!(r#"expected a {}, example: `"{}"`"#, expected, example),
+            format!(r#"expected a {}, example: `"{}"`"#, expected, example),
         ),
     }
 }

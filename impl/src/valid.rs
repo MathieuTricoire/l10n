@@ -17,9 +17,9 @@ pub fn validate_l10n(
         .map_err(|err| Error::new(Span::call_site(), err))?
         .required_variables(&resource.value(), &key.value())
         .map_err(|err| match err {
-            TranslateError::ResourceNotExists(_) => Error::new_spanned(&resource, err),
+            TranslateError::ResourceNotExists(_) => Error::new_spanned(resource, err),
             TranslateError::MessageIdNotExists { .. } => Error::new(key.id_span(), err),
-            _ => Error::new_spanned(&key, err),
+            _ => Error::new_spanned(key, err),
         })?;
 
     if arguments.is_complete() {
