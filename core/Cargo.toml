@@ -15,12 +15,9 @@ edition = "2021"
 rust-version = "1.56"
 
 [dependencies]
-# TODO Change fluent-rs crates source from crates.io if these PRs are merged:
-# - https://github.com/projectfluent/fluent-rs/pull/264
-# - https://github.com/projectfluent/fluent-rs/pull/271
-fluent-bundle = { path = "../fluent-rs/fluent-bundle" }
-fluent-syntax = { path = "../fluent-rs/fluent-syntax" }
-intl-memoizer = { path = "../fluent-rs/intl-memoizer" }
+fluent-bundle = "0.15"
+fluent-syntax = "0.11"
+intl-memoizer = "0.5"
 
 unic-langid = { version = "0.9", features = ["macros", "serde"] }
 thiserror = "1.0"

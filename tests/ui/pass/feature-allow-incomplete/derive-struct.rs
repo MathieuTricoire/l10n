@@ -23,7 +23,7 @@ fn main() {
 }
 
 #[derive(L10nMessage)]
-#[l10n_message("home", "state.busy", "reason" = reason, ...)]
+#[l10n_message("home", "state.busy", "reason" = reason.as_str(), ...)]
 struct Busy {
     reason: String,
 }

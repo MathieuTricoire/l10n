@@ -45,7 +45,7 @@
 //!     Online,
 //!     #[l10n_message(".offline")]
 //!     Offline,
-//!     #[l10n_message(".busy", reason, "gender" = "other")]
+//!     #[l10n_message(".busy", "reason" = reason.as_str(), "gender" = "other")]
 //!     Busy { reason: String },
 //! }
 //! ```
@@ -148,6 +148,7 @@ pub use l10n_core::unic_langid;
 pub use l10n_core::l10n::{L10n, L10nBuilder, TranslateError};
 pub use l10n_core::l10n_message::L10nMessage;
 pub use l10n_core::locales::Locales;
+pub use l10n_core::merge_args;
 pub use l10n_core::message::Message;
 pub use l10n_core::UNEXPECTED_MESSAGE;
 

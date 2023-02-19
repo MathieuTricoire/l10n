@@ -15,6 +15,6 @@ enum State {
     Online,
     #[l10n_message("home", "state.offline")]
     Offline,
-    #[l10n_message("home", "state.busy", reason, "gender" = "other")]
+    #[l10n_message("home", "state.busy", "reason" = reason.as_str(), "gender" = "other")]
     Busy { reason: String },
 }

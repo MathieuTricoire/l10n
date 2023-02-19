@@ -33,13 +33,13 @@ fn main() {
 #[derive(L10nMessage)]
 #[l10n_message("home", "state", "gender" = "other")]
 enum State {
-    #[l10n_message(".busy", reason)]
+    #[l10n_message(".busy", "reason" = reason.as_str())]
     Busy { reason: String },
 }
 
 #[derive(L10nMessage)]
 #[l10n_message("home", "gender" = "other")]
 enum StateAlternative {
-    #[l10n_message("state.busy", reason, gender)]
+    #[l10n_message("state.busy", "reason" = reason.as_str(), "gender" = gender.as_str())]
     Busy { reason: String, gender: String },
 }
