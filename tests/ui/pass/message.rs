@@ -1,10 +1,10 @@
-use l10n::message;
 use l10n::unic_langid::langid;
+use l10n::L10nMessage;
 
 l10n::init!();
 
 fn main() {
-    let welcome = message!(
+    let welcome = l10n::message!(
         "home",
         "welcome",
         "first-name" = "Alan",

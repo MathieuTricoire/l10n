@@ -1,9 +1,7 @@
-use l10n::message;
-
 l10n::init!();
 
 fn main() {
-    let _ = message!(
+    let _ = l10n::message!(
         "home",
         "state.busy",
         "reason" = "Working",

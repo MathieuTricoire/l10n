@@ -1,6 +1,6 @@
 use l10n::fluent_bundle::{memoizer::MemoizerKind, FluentArgs, FluentValue};
-use l10n::message;
 use l10n::unic_langid::langid;
+use l10n::L10nMessage;
 use std::borrow::Cow;
 
 fn transform(s: &str) -> Cow<str> {
@@ -44,7 +44,7 @@ fn main() {
     let last_name = "Turing";
     let points = 1000;
 
-    let welcome = message!("home", "welcome", first_name, last_name, points);
+    let welcome = l10n::message!("home", "welcome", first_name, last_name, points);
     assert_eq!(
         welcome.translate(&langid!("en")),
         "We(ŀ)come alan TURING on Chat App, you have un(ŀ)ocked 1000_f64 points!"

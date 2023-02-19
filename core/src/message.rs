@@ -1,4 +1,5 @@
 use crate::l10n::{L10n, TranslateError};
+use crate::l10n_message::L10nMessage;
 use crate::{merge_args, UNEXPECTED_MESSAGE};
 use fluent_bundle::FluentArgs;
 use std::{borrow::Cow, fmt::Debug};
@@ -7,16 +8,16 @@ use unic_langid::LanguageIdentifier;
 #[derive(Debug)]
 pub struct Message<'l10n, 'args> {
     l10n: &'l10n L10n,
-    resource: &'static str,
-    key: &'static str,
+    resource: &'args str,
+    key: &'args str,
     args: Option<FluentArgs<'args>>,
 }
 
 impl<'l10n, 'args> Message<'l10n, 'args> {
     pub fn new(
         l10n: &'l10n L10n,
-        resource: &'static str,
-        key: &'static str,
+        resource: &'args str,
+        key: &'args str,
         args: Option<FluentArgs<'args>>,
     ) -> Message<'l10n, 'args> {
         Self {
@@ -28,46 +29,25 @@ impl<'l10n, 'args> Message<'l10n, 'args> {
     }
 }
 
-impl<'translator, 'args> Message<'translator, 'args> {
-    pub fn try_translate_with_args(
-        &self,
-        lang: &LanguageIdentifier,
-        args: Option<&FluentArgs>,
-    ) -> Result<Cow<'translator, str>, TranslateError> {
+impl<'l10n, 'args> L10nMessage<'args, 'l10n> for Message<'l10n, 'args> {
+    fn try_translate_with_args(
+        &'args self,
+        locale: &LanguageIdentifier,
+        args: Option<&'args FluentArgs<'args>>,
+    ) -> Result<Cow<'l10n, str>, TranslateError> {
         match (self.args.as_ref(), args) {
             (Some(local_args), Some(overriding_args)) => {
                 let args = merge_args(&local_args, &overriding_args);
                 self.l10n
-                    .try_translate_with_args(lang, self.resource, self.key, Some(&args))
+                    .try_translate_with_args(locale, self.resource, self.key, Some(&args))
             }
             _ => self.l10n.try_translate_with_args(
-                lang,
+                locale,
                 self.resource,
                 self.key,
                 self.args.as_ref().or(args),
             ),
         }
-    }
-
-    pub fn translate_with_args(
-        &self,
-        lang: &LanguageIdentifier,
-        args: Option<&FluentArgs>,
-    ) -> Cow<'translator, str> {
-        self.try_translate_with_args(lang, args)
-            .unwrap_or_else(|_| Cow::from(UNEXPECTED_MESSAGE))
-    }
-
-    pub fn try_translate(
-        &self,
-        lang: &LanguageIdentifier,
-    ) -> Result<Cow<'translator, str>, TranslateError> {
-        self.try_translate_with_args(lang, None)
-    }
-
-    pub fn translate(&self, lang: &LanguageIdentifier) -> Cow<'translator, str> {
-        self.try_translate_with_args(lang, None)
-            .unwrap_or_else(|_| Cow::from(UNEXPECTED_MESSAGE))
     }
 }
 

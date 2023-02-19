@@ -25,6 +25,7 @@ type ResourceName = String;
 type GlobalUnnamedResources = Vec<ResourceIndex>;
 type UnnamedResources = HashMap<(String, LanguageIdentifier), Vec<ResourceIndex>>;
 type NamedResources = HashMap<ResourceName, HashMap<LanguageIdentifier, ResourceIndex>>;
+type Functions = HashMap<String, for<'a> fn(&[FluentValue<'a>], &FluentArgs) -> FluentValue<'a>>;
 
 self_cell!(
     struct InnerL10n {
@@ -48,7 +49,7 @@ pub struct L10nBuilder {
     transform: Option<fn(&str) -> Cow<str>>,
     formatter: Option<fn(&FluentValue, &IntlLangMemoizer) -> Option<String>>,
     use_isolating: bool,
-    functions: HashMap<String, for<'a> fn(&[FluentValue<'a>], &FluentArgs) -> FluentValue<'a>>,
+    functions: Functions,
 }
 
 #[derive(Error, PartialEq, Eq, Debug)]
@@ -302,12 +303,11 @@ impl L10n {
         key: &str,
         args: Option<&FluentArgs<'b>>,
     ) -> Result<Cow<'a, str>, TranslateError> {
-        Ok(self
-            .inner
+        self.inner
             .borrow_dependent()
             .get(resource)
             .ok_or_else(|| TranslateError::ResourceNotExists(resource.to_string()))?
-            .translate(lang, key, args)?)
+            .translate(lang, key, args)
     }
 
     pub fn required_variables(
@@ -315,12 +315,11 @@ impl L10n {
         resource: &str,
         key: &str,
     ) -> Result<HashSet<&str>, TranslateError> {
-        Ok(self
-            .inner
+        self.inner
             .borrow_dependent()
             .get(resource)
             .ok_or_else(|| TranslateError::ResourceNotExists(resource.to_string()))?
-            .required_variables(key)?)
+            .required_variables(key)
     }
 
     pub fn required_functions(&self) -> HashSet<&str> {
@@ -670,7 +669,7 @@ fn normalized_path(path: &Path) -> String {
         .join("/")
 }
 
-fn get_entry_name(entry_path: &PathBuf) -> Option<&OsStr> {
+fn get_entry_name(entry_path: &Path) -> Option<&OsStr> {
     if entry_path.is_dir() {
         entry_path.file_name()
     } else {

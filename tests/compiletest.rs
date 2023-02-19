@@ -2,7 +2,7 @@ use std::io::Read;
 use std::path::PathBuf;
 use std::{env, fs};
 
-const L10N_CONFIG_FILE: &'static str = "L10N_CONFIG_FILE";
+const L10N_CONFIG_FILE: &str = "L10N_CONFIG_FILE";
 
 #[test]
 fn ui() {
@@ -40,7 +40,7 @@ fn ui() {
                 if let Some(feature) = name.strip_prefix("feature-") {
                     match feature {
                         "allow-incomplete" => {
-                            if !(cfg!(feature = "allow-incomplete")) {
+                            if cfg!(not(feature = "allow-incomplete")) {
                                 continue;
                             }
                         }
