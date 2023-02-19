@@ -2,8 +2,8 @@
 
 [![CI badge]][CI] [![Crate badge]][Crate] [![Rustc badge]][Rustc]
 
-[CI badge]: https://img.shields.io/github/workflow/status/MathieuTricoire/l10n/CI/main
-[CI]: https://github.com/MathieuTricoire/l10n/actions?query=branch%3Amain
+[CI badge]: https://github.com/MathieuTricoire/l10n/actions/workflows/ci.yml/badge.svg?branch=0.1
+[CI]: https://github.com/MathieuTricoire/l10n/actions/workflows/ci.yml
 [Crate badge]: https://img.shields.io/crates/v/l10n.svg
 [Crate]: https://crates.io/crates/l10n
 [Rustc badge]: https://img.shields.io/badge/rustc-1.56+-lightgray.svg
