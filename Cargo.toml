@@ -1,6 +1,6 @@
 [package]
 name = "l10n"
-version = "0.1.0"
+version = "0.1.2"
 description = "Opinionated localization library built upon fluent-bundle."
 authors = ["Mathieu Tricoire <mathieu@tricoi.re>"]
 license = "MIT OR Apache-2.0"
@@ -16,16 +16,15 @@ rust-version = "1.61"
 
 [workspace]
 members = ["core", "impl"]
-exclude = ["fluent-rs"]
 
 [dependencies]
-l10n_core = { version = "=0.1.0", path = "core" }
-l10n_impl = { version = "=0.1.0", path = "impl" }
+l10n_core = { version = "=0.1.2", path = "core" }
+l10n_impl = { version = "=0.1.2", path = "impl" }
 once_cell = "1.13"
 
 [dev-dependencies]
 fluent-pseudo = "0.3"
-indoc = "1.0"
+indoc = "2.0"
 rustversion = "1.0"
 tempfile = "3.3"
 trybuild = { version = "1.0", features = ["diff"] }

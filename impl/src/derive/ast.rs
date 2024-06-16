@@ -4,7 +4,7 @@ use syn::parse::ParseStream;
 use syn::spanned::Spanned;
 use syn::{
     Attribute, Data, DataEnum, DataStruct, DeriveInput, Error, Fields, Ident, Index, Lifetime,
-    LitStr, Member, Result, Token, Type,
+    LitStr, Member, Meta, Result, Token, Type,
 };
 
 pub enum Input<'a> {
@@ -38,6 +38,7 @@ pub struct Field<'a> {
     pub from: Option<&'a Attribute>,
 }
 
+// TODO: I would like to remove Default, either it's a L10nAttribute as a whole or it's not.
 #[derive(Default)]
 pub struct L10nAttribute<'a> {
     pub attribute: Option<&'a Attribute>,
@@ -46,6 +47,7 @@ pub struct L10nAttribute<'a> {
     pub first_literal: Option<LitStr>,
     pub second_literal: Option<LitStr>,
     pub arguments: MessageArgs,
+    pub closing_span: Option<Span>,
 }
 
 impl<'a> Input<'a> {
@@ -105,7 +107,7 @@ impl<'a> Variant<'a> {
 fn parse_l10n_attribute(attrs: &[Attribute]) -> Result<Option<L10nAttribute<'_>>> {
     let mut l10n_attribute: Option<L10nAttribute> = None;
     for attr in attrs {
-        if attr.path.is_ident("l10n_message") {
+        if attr.path().is_ident("l10n_message") {
             if l10n_attribute.is_some() {
                 return Err(Error::new_spanned(
                     attr,
@@ -121,16 +123,24 @@ fn parse_l10n_attribute(attrs: &[Attribute]) -> Result<Option<L10nAttribute<'_>>
 fn _parse_l10n_attribute(attr: &Attribute) -> Result<L10nAttribute<'_>> {
     syn::custom_keyword!(transparent);
 
-    attr.parse_args_with(|input: ParseStream| {
-        let mut l10n_attribute = L10nAttribute {
-            attribute: Some(attr),
-            transparent: None,
-            self_lifetime: None,
-            first_literal: None,
-            second_literal: None,
-            arguments: Default::default(),
-        };
+    let Meta::List(list) = &attr.meta else {
+        unimplemented!();
+        // return attr.meta.span()
+    };
 
+    let closing_span = list.delimiter.span().close();
+
+    let mut l10n_attribute = L10nAttribute {
+        attribute: Some(attr),
+        transparent: None,
+        self_lifetime: None,
+        first_literal: None,
+        second_literal: None,
+        arguments: Default::default(),
+        closing_span: Some(closing_span),
+    };
+
+    attr.parse_args_with(|input: ParseStream| {
         l10n_attribute.transparent = input
             .parse::<Option<transparent>>()
             .map(|r| r.map(|kw| kw.span()))?;
@@ -145,7 +155,7 @@ fn _parse_l10n_attribute(attr: &Attribute) -> Result<L10nAttribute<'_>> {
             input.parse::<Token![,]>()?;
         }
 
-        if !peek_potential_argument(input) {
+        if !peek_argument(input) {
             l10n_attribute.first_literal = input.parse()?;
             if input.is_empty() {
                 return Ok(l10n_attribute);
@@ -154,7 +164,7 @@ fn _parse_l10n_attribute(attr: &Attribute) -> Result<L10nAttribute<'_>> {
             }
         }
 
-        if !peek_potential_argument(input) {
+        if !peek_argument(input) {
             l10n_attribute.second_literal = input.parse()?;
             if input.is_empty() {
                 return Ok(l10n_attribute);
@@ -171,7 +181,7 @@ fn _parse_l10n_attribute(attr: &Attribute) -> Result<L10nAttribute<'_>> {
     })
 }
 
-fn peek_potential_argument(input: ParseStream) -> bool {
+fn peek_argument(input: ParseStream) -> bool {
     (input.peek(LitStr) && input.peek2(Token![=]))
         || input.peek(Ident)
         || (input.peek(Token![*]) && input.peek2(Ident))
@@ -203,7 +213,7 @@ impl<'a> Field<'a> {
             from: field_input
                 .attrs
                 .iter()
-                .find(|attr| attr.path.is_ident("l10n_from")),
+                .find(|attr| attr.path().is_ident("l10n_from")),
         })
     }
 }

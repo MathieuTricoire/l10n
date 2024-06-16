@@ -27,95 +27,6 @@ type UnnamedResources = HashMap<(String, LanguageIdentifier), Vec<ResourceIndex>
 type NamedResources = HashMap<ResourceName, HashMap<LanguageIdentifier, ResourceIndex>>;
 type Functions = HashMap<String, for<'a> fn(&[FluentValue<'a>], &FluentArgs) -> FluentValue<'a>>;
 
-self_cell!(
-    struct InnerL10n {
-        owner: FluentResources,
-        #[covariant]
-        dependent: Resources,
-    }
-);
-
-pub struct L10n {
-    inner: InnerL10n,
-    pub locales: Locales,
-}
-
-pub struct L10nBuilder {
-    locales: Locales,
-    fluent_resources: FluentResources,
-    global_unnamed_resources: GlobalUnnamedResources,
-    unnamed_resources: UnnamedResources,
-    named_resources: NamedResources,
-    transform: Option<fn(&str) -> Cow<str>>,
-    formatter: Option<fn(&FluentValue, &IntlLangMemoizer) -> Option<String>>,
-    use_isolating: bool,
-    functions: Functions,
-}
-
-#[derive(Error, PartialEq, Eq, Debug)]
-#[error("build l10n errors:\n  - {}", values_to_string(.0, "\n  - "))]
-pub struct BuildErrors(Vec<BuildError>);
-
-#[derive(Error, PartialEq, Eq, PartialOrd, Ord, Debug)]
-pub enum BuildError {
-    #[error(r#"missing resource "{}" {}"#, .resource, for_locales(.locales))]
-    MissingResource {
-        resource: String,
-        locales: Vec<LanguageIdentifier>,
-    },
-    #[error(r#"missing message "{message}" in resource "{resource}" for locales: {}"#, locales_to_string(.locales, ", "))]
-    MissingMessage {
-        resource: String,
-        message: String,
-        locales: Vec<LanguageIdentifier>,
-    },
-    #[error(r#"extra message "{message}" in resource "{resource}" for locales: {}"#, locales_to_string(.locales, ", "))]
-    ExtraMessage {
-        resource: String,
-        message: String,
-        locales: Vec<LanguageIdentifier>,
-    },
-    #[error(r#"missing attribute "{attribute}" for message "{message}" in resource "{resource}" for locales: {}"#, locales_to_string(.locales, ", "))]
-    MissingAttribute {
-        resource: String,
-        message: String,
-        attribute: String,
-        locales: Vec<LanguageIdentifier>,
-    },
-    #[error(r#"extra attribute "{attribute}" for message "{message}" in resource "{resource}" for locales: {}"#, locales_to_string(.locales, ", "))]
-    ExtraAttribute {
-        resource: String,
-        message: String,
-        attribute: String,
-        locales: Vec<LanguageIdentifier>,
-    },
-}
-
-#[derive(Error, Debug)]
-pub enum ParserError {
-    #[error("impossible to read path `{}` (io error: {err})", path.display())]
-    ReadPath { path: PathBuf, err: io::Error },
-    #[error("impossible to parse directory `{dir_name}` as a language identifier, (error: {err})")]
-    ParseLangDir {
-        dir_name: String,
-        err: unic_langid::LanguageIdentifierError,
-    },
-    #[error(
-        "missing mandatory locale {}: {}",
-        grammar_number(.0, "directory", "directories"),
-        locales_to_string(.0, ", ")
-    )]
-    MissingLocales(Vec<LanguageIdentifier>),
-    #[error(r#"named resource "{}" cannot be global, please prefix file name with `_`"#, path.display())]
-    GlobalNamedResource { path: PathBuf },
-    #[error(transparent)]
-    Io(#[from] io::Error),
-    #[error("parsing errors: {errors:#?}")]
-    FluentParser {
-        errors: Vec<fluent_syntax::parser::ParserError>,
-    },
-}
-
 #[derive(Error, PartialEq, Debug)]
 pub enum TranslateError {
     #[error(r#"resource "{0}" not exists"#)]
@@ -144,11 +55,18 @@ pub enum TranslateError {
     FormatErrors(Vec<FluentError>),
 }
 
-impl Debug for L10n {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("L10n").finish()
-    }
+pub struct L10n {
+    inner: InnerL10n,
+    pub locales: Locales,
 }
+
+self_cell!(
+    struct InnerL10n {
+        owner: FluentResources,
+        #[covariant]
+        dependent: Resources,
+    }
+);
 
 impl L10n {
     fn new(builder: L10nBuilder) -> Result<Self, BuildErrors> {
@@ -167,82 +85,80 @@ impl L10n {
         } = builder;
 
         let inner_translator = InnerL10n::new(fluent_resources, |fluent_resources| {
-            named_resources
-                .iter()
-                .map(|(name, _)| {
-                    let mut l10n_resource = L10nResource::new();
-                    for locale in locales.main_locales() {
-                        let locales_resolution = locales
-                            .locale_resolution_route(&locale)
-                            .expect("Unexpected error, `locale_resolution_route` should not be None in this context!");
-                        let mut inverted_locales_resolution = locales_resolution.clone();
-                        inverted_locales_resolution.reverse();
-                        let mut fl_bundle = FluentBundle::new_concurrent(
-                            locales_resolution.into_iter().cloned().collect(),
-                        );
+            named_resources.keys().map(|name| {
+                let mut l10n_resource = L10nResource::new();
+                for locale in locales.main_locales() {
+                    let locales_resolution = locales
+                        .locale_resolution_route(&locale)
+                        .expect("Unexpected error, `locale_resolution_route` should not be None in this context!");
+                    let mut inverted_locales_resolution = locales_resolution.clone();
+                    inverted_locales_resolution.reverse();
+                    let mut fl_bundle = FluentBundle::new_concurrent(
+                        locales_resolution.into_iter().cloned().collect(),
+                    );
 
-                        for fl_res in Self::global_unnamed_fluent_resources(
-                            &global_unnamed_resources,
-                            fluent_resources,
-                        ) {
-                            fl_bundle.add_resource_overriding(fl_res);
-                        }
+                    for fl_res in Self::global_unnamed_fluent_resources(
+                        &global_unnamed_resources,
+                        fluent_resources,
+                    ) {
+                        fl_bundle.add_resource_overriding(fl_res);
+                    }
 
-                        let mut relative_paths = vec![];
-                        let mut relative_path = Some(
-                            name.parse::<PathBuf>()
-                                .unwrap()
-                                .parent()
-                                .unwrap()
-                                .to_path_buf(),
-                        );
-                        while let Some(path) = relative_path {
-                            relative_paths.push(path.clone());
-                            relative_path = path.parent().map(|p| p.to_path_buf());
-                        }
-                        relative_paths.reverse();
+                    let mut relative_paths = vec![];
+                    let mut relative_path = Some(
+                        name.parse::<PathBuf>()
+                            .unwrap()
+                            .parent()
+                            .unwrap()
+                            .to_path_buf(),
+                    );
+                    while let Some(path) = relative_path {
+                        relative_paths.push(path.clone());
+                        relative_path = path.parent().map(|p| p.to_path_buf());
+                    }
+                    relative_paths.reverse();
 
-                        for relative_path in relative_paths {
-                            for locale in &inverted_locales_resolution {
-                                for fl_res in Self::unnamed_fluent_resources(
-                                    &relative_path,
-                                    locale,
-                                    &unnamed_resources,
-                                    fluent_resources,
-                                ) {
-                                    fl_bundle.add_resource_overriding(fl_res);
-                                }
-                            }
-                        }
-
+                    for relative_path in relative_paths {
                         for locale in &inverted_locales_resolution {
-                            if let Some(fl_res) = Self::named_fluent_resource(
-                                name,
+                            for fl_res in Self::unnamed_fluent_resources(
+                                &relative_path,
                                 locale,
-                                &named_resources,
+                                &unnamed_resources,
                                 fluent_resources,
                             ) {
                                 fl_bundle.add_resource_overriding(fl_res);
                             }
                         }
-
-                        fl_bundle.set_transform(transform);
-                        fl_bundle.set_formatter(formatter);
-                        fl_bundle.set_use_isolating(use_isolating);
-
-                        for (name, function) in functions.clone() {
-                            // Future improvement: only add functions to bundle when is needed
-                            fl_bundle
-                                .add_function(&name, function)
-                                .expect("Unexpected error, there should not be functions with same names");
-                        }
-
-                        l10n_resource.add_bundle(locale.to_owned(), fl_bundle);
                     }
 
-                    (name.to_string(), l10n_resource)
-                })
-                .collect()
+                    for locale in &inverted_locales_resolution {
+                        if let Some(fl_res) = Self::named_fluent_resource(
+                            name,
+                            locale,
+                            &named_resources,
+                            fluent_resources,
+                        ) {
+                            fl_bundle.add_resource_overriding(fl_res);
+                        }
+                    }
+
+                    fl_bundle.set_transform(transform);
+                    fl_bundle.set_formatter(formatter);
+                    fl_bundle.set_use_isolating(use_isolating);
+
+                    for (name, function) in functions.clone() {
+                        // Future improvement: only add functions to bundle when is needed
+                        fl_bundle
+                            .add_function(&name, function)
+                            .expect("Unexpected error, there should not be functions with same names");
+                    }
+
+                    l10n_resource.add_bundle(locale.to_owned(), fl_bundle);
+                }
+
+                (name.to_string(), l10n_resource)
+            })
+            .collect()
         });
 
         Ok(Self {
@@ -296,12 +212,12 @@ impl L10n {
         }
     }
 
-    pub fn try_translate_with_args<'a, 'b>(
+    pub fn try_translate_with_args<'a>(
         &'a self,
         lang: &LanguageIdentifier,
         resource: &str,
         key: &str,
-        args: Option<&FluentArgs<'b>>,
+        args: Option<&FluentArgs<'_>>,
     ) -> Result<Cow<'a, str>, TranslateError> {
         self.inner
             .borrow_dependent()
@@ -351,10 +267,10 @@ impl L10n {
         functions
     }
 
-    fn global_unnamed_fluent_resources<'r, 'a>(
-        global_unnamed_resources: &'a [ResourceIndex],
-        fluent_resources: &'r [FluentResource],
-    ) -> Vec<&'r FluentResource> {
+    fn global_unnamed_fluent_resources<'a>(
+        global_unnamed_resources: &[ResourceIndex],
+        fluent_resources: &'a [FluentResource],
+    ) -> Vec<&'a FluentResource> {
         global_unnamed_resources
             .iter()
             .map(|resource_index| fluent_resources.get(*resource_index).expect("TODO 8"))
@@ -432,28 +348,86 @@ impl L10n {
     }
 }
 
-impl Default for L10nBuilder {
-    fn default() -> Self {
-        Self {
-            locales: Default::default(),
-            fluent_resources: Default::default(),
-            global_unnamed_resources: Default::default(),
-            unnamed_resources: Default::default(),
-            named_resources: Default::default(),
-            transform: Default::default(),
-            formatter: Default::default(),
-            use_isolating: true,
-            functions: Default::default(),
-        }
+impl Debug for L10n {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("L10n").finish()
     }
 }
 
-impl Debug for L10nBuilder {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("L10nBuilder")
-            .field("locales", &self.locales)
-            .finish()
-    }
+#[derive(Error, PartialEq, Eq, Debug)]
+#[error("build l10n errors:\n  - {}", values_to_string(.0, "\n  - "))]
+pub struct BuildErrors(Vec<BuildError>);
+
+#[derive(Error, PartialEq, Eq, PartialOrd, Ord, Debug)]
+pub enum BuildError {
+    #[error(r#"missing resource "{}" {}"#, .resource, for_locales(.locales))]
+    MissingResource {
+        resource: String,
+        locales: Vec<LanguageIdentifier>,
+    },
+    #[error(r#"missing message "{message}" in resource "{resource}" for locales: {}"#, locales_to_string(.locales, ", "))]
+    MissingMessage {
+        resource: String,
+        message: String,
+        locales: Vec<LanguageIdentifier>,
+    },
+    #[error(r#"extra message "{message}" in resource "{resource}" for locales: {}"#, locales_to_string(.locales, ", "))]
+    ExtraMessage {
+        resource: String,
+        message: String,
+        locales: Vec<LanguageIdentifier>,
+    },
+    #[error(r#"missing attribute "{attribute}" for message "{message}" in resource "{resource}" for locales: {}"#, locales_to_string(.locales, ", "))]
+    MissingAttribute {
+        resource: String,
+        message: String,
+        attribute: String,
+        locales: Vec<LanguageIdentifier>,
+    },
+    #[error(r#"extra attribute "{attribute}" for message "{message}" in resource "{resource}" for locales: {}"#, locales_to_string(.locales, ", "))]
+    ExtraAttribute {
+        resource: String,
+        message: String,
+        attribute: String,
+        locales: Vec<LanguageIdentifier>,
+    },
+}
+
+#[derive(Error, Debug)]
+pub enum ParserError {
+    #[error("impossible to read path `{}` (io error: {err})", path.display())]
+    ReadPath { path: PathBuf, err: io::Error },
+    #[error("impossible to parse directory `{dir_name}` as a language identifier, (error: {err})")]
+    ParseLangDir {
+        dir_name: String,
+        err: unic_langid::LanguageIdentifierError,
+    },
+    #[error(
+        "missing mandatory locale {}: {}",
+        grammar_number(.0, "directory", "directories"),
+        locales_to_string(.0, ", ")
+    )]
+    MissingLocales(Vec<LanguageIdentifier>),
+    #[error(r#"named resource "{}" cannot be global, please prefix file name with `_`"#, path.display())]
+    GlobalNamedResource { path: PathBuf },
+    #[error(transparent)]
+    Io(#[from] io::Error),
+    #[error("parsing errors: {errors:#?}")]
+    FluentParser {
+        errors: Vec<fluent_syntax::parser::ParserError>,
+    },
+}
+
+pub struct L10nBuilder {
+    locales: Locales,
+    fluent_resources: FluentResources,
+    global_unnamed_resources: GlobalUnnamedResources,
+    unnamed_resources: UnnamedResources,
+    named_resources: NamedResources,
+    transform: Option<fn(&str) -> Cow<str>>,
+    formatter: Option<fn(&FluentValue, &IntlLangMemoizer) -> Option<String>>,
+    use_isolating: bool,
+    functions: Functions,
 }
 
 impl L10nBuilder {
@@ -622,7 +596,7 @@ impl L10nBuilder {
                     self.add_named_resource(&name, relative_path, locale, resource);
                 }
             } else if entry_path.is_dir() {
-                self.parse_locale_directory(locale, locale_path, &relative_path.join(&name))?;
+                self.parse_locale_directory(locale, locale_path, &relative_path.join(name))?;
             }
         }
 
@@ -659,6 +633,30 @@ impl L10nBuilder {
     fn read_fluent_resource(path: &Path) -> Result<FluentResource, ParserError> {
         let source = fs::read_to_string(path)?;
         FluentResource::try_new(source).map_err(|(_, errors)| ParserError::FluentParser { errors })
+    }
+}
+
+impl Default for L10nBuilder {
+    fn default() -> Self {
+        Self {
+            locales: Default::default(),
+            fluent_resources: Default::default(),
+            global_unnamed_resources: Default::default(),
+            unnamed_resources: Default::default(),
+            named_resources: Default::default(),
+            transform: Default::default(),
+            formatter: Default::default(),
+            use_isolating: true,
+            functions: Default::default(),
+        }
+    }
+}
+
+impl Debug for L10nBuilder {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("L10nBuilder")
+            .field("locales", &self.locales)
+            .finish()
     }
 }
 
@@ -861,8 +859,8 @@ mod tests {
         let translator_builder = L10nBuilder::parse(temp_dir.path(), Some(locales)).unwrap();
         let actual_resources: HashSet<_> = translator_builder
             .named_resources
-            .iter()
-            .map(|(resource, _)| resource.to_string())
+            .keys()
+            .map(|resource| resource.to_string())
             .collect();
 
         let expected_resources = HashSet::from([

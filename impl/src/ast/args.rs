@@ -2,7 +2,7 @@ use proc_macro2::{Delimiter, Group, TokenStream, TokenTree};
 use quote::{format_ident, ToTokens};
 use std::collections::HashSet;
 use syn::parse::{Parse, ParseStream, Peek};
-use syn::token::Dot3;
+use syn::token::DotDotDot;
 use syn::{
     braced, bracketed, parenthesized, token, Error, Ident, Index, LitInt, LitStr, Result, Token,
 };
@@ -10,7 +10,7 @@ use syn::{
 #[derive(Clone, Default)]
 pub struct MessageArgs {
     args: Vec<Argument>,
-    incomplete: Option<Dot3>,
+    incomplete: Option<DotDotDot>,
 }
 
 #[derive(Clone)]
@@ -105,7 +105,7 @@ impl Parse for MessageArgs {
     fn parse(input: ParseStream) -> Result<Self> {
         let mut arguments = Self::default();
         while !input.is_empty() {
-            arguments.incomplete = input.parse::<Option<Dot3>>()?;
+            arguments.incomplete = input.parse::<Option<DotDotDot>>()?;
             if let Some(incomplete) = arguments.incomplete {
                 if !input.is_empty() {
                     return Err(Error::new_spanned(
@@ -246,21 +246,21 @@ fn parse_argument_value<T: Peek>(
             let delimiter = parenthesized!(content in input);
             let nested = parse_argument_value(&content, true, separator, true)?;
             let mut group = Group::new(Delimiter::Parenthesis, nested);
-            group.set_span(delimiter.span);
+            group.set_span(delimiter.span.join());
             TokenTree::Group(group)
         } else if input.peek(token::Brace) {
             let content;
             let delimiter = braced!(content in input);
             let nested = parse_argument_value(&content, true, separator, true)?;
             let mut group = Group::new(Delimiter::Brace, nested);
-            group.set_span(delimiter.span);
+            group.set_span(delimiter.span.join());
             TokenTree::Group(group)
         } else if input.peek(token::Bracket) {
             let content;
             let delimiter = bracketed!(content in input);
             let nested = parse_argument_value(&content, true, separator, true)?;
             let mut group = Group::new(Delimiter::Bracket, nested);
-            group.set_span(delimiter.span);
+            group.set_span(delimiter.span.join());
             TokenTree::Group(group)
         } else {
             input.parse()?

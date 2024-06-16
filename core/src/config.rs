@@ -167,7 +167,7 @@ pub fn get_config() -> Result<Config, ConfigError> {
 }
 
 fn deserialize_translator_config(source: &str) -> Result<Config, toml::de::Error> {
-    Ok(toml::from_str::<'_, ConfigFile>(source)?.l10n)
+    Ok(toml::from_str::<ConfigFile>(source)?.l10n)
 }
 
 fn replace_root_var_in_path(path: &mut PathBuf, root_path: &Path) {

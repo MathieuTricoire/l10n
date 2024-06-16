@@ -2,7 +2,7 @@ use super::ast::{Enum, Input, Struct, Variant};
 use super::{field_to_ident, Field};
 use crate::ast::{MessageArgs, MessageKey};
 use crate::valid::validate_l10n;
-use proc_macro2::{Span, TokenStream, TokenTree};
+use proc_macro2::{Span, TokenStream};
 use syn::spanned::Spanned;
 use syn::{Attribute, DeriveInput, Error, Ident, Lifetime, LitStr, Result};
 
@@ -100,7 +100,8 @@ impl<'a> StructDigest<'a> {
             &resource,
             &key,
             &arguments,
-            attribute_closing_span(l10n_attribute),
+            input.l10n_attribute.closing_span.unwrap(), // TODO: Remove `unwrap()`
+                                                        // attribute_closing_span(l10n_attribute),
         )?;
 
         Ok(StructDigest {
@@ -216,11 +217,12 @@ impl<'a> VariantDigest<'a> {
             &resource,
             &key,
             &arguments,
-            variant_input
-                .l10n_attribute
-                .attribute
-                .map(attribute_closing_span)
-                .unwrap_or_else(|| variant_input.variant_input.ident.span()),
+            variant_input.l10n_attribute.closing_span.unwrap(), // TODO: Remove `unwrap()`
+                                                                // variant_input
+                                                                //     .l10n_attribute
+                                                                //     .attribute
+                                                                //     .map(attribute_closing_span)
+                                                                //     .unwrap_or_else(|| variant_input.variant_input.ident.span()),
         )?;
 
         Ok(VariantDigest {
@@ -262,15 +264,15 @@ fn missing_literal_message(
 ) -> Error {
     match argument_ts {
         Some(ts) => Error::new_spanned(
-            &ts,
-            &format!(
+            ts,
+            format!(
                 r#"expected a {} in place of the argument, example: `"{}", {}`"#,
                 expected, example, ts
             ),
         ),
         _ => Error::new(
             attribute_closing_span(attribute),
-            &format!(r#"expected a {}, example: `"{}"`"#, expected, example),
+            format!(r#"expected a {}, example: `"{}"`"#, expected, example),
         ),
     }
 }
@@ -280,18 +282,26 @@ fn variant_or_enum_attribute_span(
     enum_attribute: Option<&Attribute>,
 ) -> Span {
     variant_attribute
-        .map(|attr| attr.path.span())
-        .or_else(|| enum_attribute.map(|attr| attr.path.span()))
+        .map(|attr| attr.path().span())
+        .or_else(|| enum_attribute.map(|attr| attr.path().span()))
         .unwrap_or_else(Span::call_site)
 }
 
 fn attribute_closing_span(attr: &Attribute) -> Span {
-    let iter = attr.tokens.clone().into_iter();
-    let tokens: Vec<_> = iter.collect();
-    if tokens.len() == 1 {
-        if let TokenTree::Group(group) = &tokens[0] {
-            return group.span_close();
-        }
-    }
-    attr.tokens.span()
+    attr.bracket_token.span.close()
+    // let token_stream = attr.bracket_token.span.close().to_token_stream();
+    // let iter = token_stream.clone().into_iter();
+    // let tokens: Vec<_> = iter.collect();
+
+    // println!("tokens.len(): {}", tokens.len());
+    // for token in tokens.clone() {
+    //     println!("token: {}", token);
+    // }
+
+    // if tokens.len() == 1 {
+    //     if let TokenTree::Group(group) = &tokens[0] {
+    //         return group.span_close();
+    //     }
+    // }
+    // token_stream.span()
 }

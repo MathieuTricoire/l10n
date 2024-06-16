@@ -10,7 +10,7 @@ pub struct MessageKey {
 impl MessageKey {
     pub fn from_enum_and_variant(enum_key: &Option<LitStr>, variant_key: LitStr) -> Result<Self> {
         match variant_key.value().find('.') {
-            Some(dot_position) if dot_position == 0 => {
+            Some(0) => {
                 match enum_key {
                     Some(enum_key) => {
                         let mut message_key = enum_key.value();

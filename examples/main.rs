@@ -8,7 +8,7 @@ fn l10n_transform(s: &str) -> Cow<str> {
 }
 
 fn time<'a>(positional: &[FluentValue<'a>], _named: &FluentArgs) -> FluentValue<'a> {
-    match positional.get(0) {
+    match positional.first() {
         Some(FluentValue::String(s)) => FluentValue::String(Cow::from(format!("{}🕒", s))),
         Some(v) => v.to_owned(),
         _ => FluentValue::Error,

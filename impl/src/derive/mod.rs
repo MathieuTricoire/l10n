@@ -4,7 +4,7 @@ use proc_macro2::{Span, TokenStream};
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use syn::spanned::Spanned;
 use syn::{
-    Data, DeriveInput, GenericArgument, GenericParam, Ident, Lifetime, LifetimeDef, Member,
+    Data, DeriveInput, GenericArgument, GenericParam, Ident, Lifetime, LifetimeParam, Member,
     PathArguments, Result, Type, Visibility,
 };
 
@@ -170,13 +170,13 @@ fn get_trait_data(original: &DeriveInput, l10n_self_lifetime: Option<Lifetime>) 
         let lifetime = syn::Lifetime::new("'__l10n_self", Span::call_site());
         generics
             .params
-            .push(GenericParam::Lifetime(LifetimeDef::new(lifetime.clone())));
+            .push(GenericParam::Lifetime(LifetimeParam::new(lifetime.clone())));
         lifetime
     });
 
     generics
         .params
-        .push(GenericParam::Lifetime(LifetimeDef::new(
+        .push(GenericParam::Lifetime(LifetimeParam::new(
             syn::Lifetime::new("'__l10n_result", Span::call_site()),
         )));
 
@@ -199,8 +199,7 @@ fn get_trait_data(original: &DeriveInput, l10n_self_lifetime: Option<Lifetime>) 
 
 fn spanned_impl_trait(input: &DeriveInput, args_lifetime: &Lifetime) -> TokenStream {
     let vis_span = match &input.vis {
-        Visibility::Public(vis) => Some(vis.pub_token.span()),
-        Visibility::Crate(vis) => Some(vis.crate_token.span()),
+        Visibility::Public(pub_token) => Some(pub_token.span()),
         Visibility::Restricted(vis) => Some(vis.pub_token.span()),
         Visibility::Inherited => None,
     };

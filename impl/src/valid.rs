@@ -10,16 +10,16 @@ pub fn validate_l10n(
     resource: &LitStr,
     key: &MessageKey,
     arguments: &MessageArgs,
-    span_missing: Span,
+    span_missing_arguments: Span,
 ) -> Result<()> {
     let required_arguments = L10N
         .as_ref()
         .map_err(|err| Error::new(Span::call_site(), err))?
         .required_variables(&resource.value(), &key.value())
         .map_err(|err| match err {
-            TranslateError::ResourceNotExists(_) => Error::new_spanned(&resource, err),
+            TranslateError::ResourceNotExists(_) => Error::new_spanned(resource, err),
             TranslateError::MessageIdNotExists { .. } => Error::new(key.id_span(), err),
-            _ => Error::new_spanned(&key, err),
+            _ => Error::new_spanned(key, err),
         })?;
 
     if arguments.is_complete() {
@@ -32,7 +32,7 @@ pub fn validate_l10n(
         if !missing_arguments.is_empty() {
             missing_arguments.sort();
             return Err(Error::new(
-                span_missing,
+                span_missing_arguments,
                 format!(
                     r#"missing arguments: "{}" for resource: {} and key: {}"#,
                     missing_arguments.join("\", \""),

@@ -157,7 +157,8 @@ impl Parse for InitInput {
         if !input.is_empty() {
             let content;
             braced!(content in input);
-            let fields: Punctuated<Field, Comma> = content.parse_terminated(Field::parse)?;
+            let fields: Punctuated<Field, Comma> =
+                content.parse_terminated(Field::parse, Token![,])?;
             for field in fields {
                 match field {
                     Field::Formatter(ident, formatter) => {
@@ -216,7 +217,7 @@ impl Parse for Field {
                 braced!(content in input);
                 Ok(Self::Functions(
                     ident,
-                    content.parse_terminated(Function::parse)?,
+                    content.parse_terminated(Function::parse, Token![,])?,
                 ))
             }
             _ => Err(Error::new_spanned(
