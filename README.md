@@ -19,11 +19,9 @@ Code repository: <https://github.com/MathieuTricoire/l10n>
 
 ## Installation
 
-_Note: [`l10n@0.1`] is available here: https://github.com/MathieuTricoire/l10n/tree/0.1_
-
 ```toml
 [dependencies]
-l10n = { git = "https://github.com/MathieuTricoire/l10n.git" }
+l10n = "0.1.3"
 ```
 
 MSRV: rustc 1.61+
