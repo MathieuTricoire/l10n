@@ -1,18 +1,17 @@
 [package]
 name = "l10n_core"
-version = "0.1.2"
+version = { workspace = true }
 description = "Core crate for l10n."
-authors = ["Mathieu Tricoire <mathieu@tricoi.re>"]
-license = "MIT OR Apache-2.0"
-homepage = "https://github.com/MathieuTricoire/l10n"
-repository = "https://github.com/MathieuTricoire/l10n"
-documentation = "https://docs.rs/l10n"
+authors = { workspace = true }
+license = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+documentation = { workspace = true }
 readme = "README.md"
-categories = ["localization", "internationalization"]
-keywords = ["l10n", "localization", "i18n", "internationalization", "macros"]
-edition = "2021"
-# Keep in sync with Cargo.toml files, clippy.toml and .github/workflows/ci.yml
-rust-version = "1.61"
+categories = { workspace = true }
+keywords = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
 
 [dependencies]
 anyhow = "1.0"
@@ -20,9 +19,9 @@ fluent-bundle = "0.15.3"
 fluent-syntax = "0.11.1"
 intl-memoizer = "0.5.2"
 self_cell = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-thiserror = "1.0"
-toml = "0.8"
+serde = { workspace = true }
+thiserror = { workspace = true }
+toml = { workspace = true }
 unic-langid = { version = "0.9", features = ["macros", "serde"] }
 
 [dev-dependencies]

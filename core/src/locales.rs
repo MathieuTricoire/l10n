@@ -282,7 +282,7 @@ impl<'de> Deserialize<'de> for LocaleEntry {
                     }
                 }
 
-                deserializer.deserialize_any(LangIdVisitor(serde::__private::PhantomData::<LangId>))
+                deserializer.deserialize_any(LangIdVisitor(PhantomData::<LangId>))
             }
         }
 
@@ -323,9 +323,7 @@ impl<'de> Deserialize<'de> for LocaleEntry {
             }
         }
 
-        deserializer.deserialize_any(LocaleEntryVisitor(
-            serde::__private::PhantomData::<LocaleEntry>,
-        ))
+        deserializer.deserialize_any(LocaleEntryVisitor(PhantomData::<LocaleEntry>))
     }
 }
 

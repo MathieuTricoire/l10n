@@ -9,7 +9,7 @@
 [Rustc badge]: https://img.shields.io/badge/rustc-1.61+-lightgray.svg
 [Rustc]: https://blog.rust-lang.org/2021/10/21/Rust-1.61.0.html
 
-[`l10n`] is a high level and opinionated localization crate built upon the excellent [`fluent-bundle`](https://crates.io/crates/fluent-bundle) crate, the [Fluent project](https://projectfluent.org) and inspired by the [`thiserror`](https://crates.io/crates/thiserror) crate.
+[`l10n`] is an opinionated localization crate built upon the excellent [`fluent-bundle`](https://crates.io/crates/fluent-bundle) crate, the [Fluent project](https://projectfluent.org) and inspired by the [`thiserror`](https://crates.io/crates/thiserror) crate.
 
 The goal of this crate is to ease project localization and provide compile time checks (message exists, mandatory arguments are set, functions are defined).
 

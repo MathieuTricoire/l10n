@@ -1,4 +1,6 @@
-//! [`l10n`](https://crates.io/crates/l10n) is a high level and opinionated localization crate built upon the excellent [`fluent-bundle`](https://crates.io/crates/fluent-bundle) crate, the [Fluent project](https://projectfluent.org) and inspired by the [`thiserror`](https://crates.io/crates/thiserror) crate.
+#![cfg_attr(doctest, doc = include_str!("../README.md"))]
+
+//! [`l10n`](https://crates.io/crates/l10n) is an opinionated localization crate built upon the excellent [`fluent-bundle`](https://crates.io/crates/fluent-bundle) crate, the [Fluent project](https://projectfluent.org) and inspired by the [`thiserror`](https://crates.io/crates/thiserror) crate.
 //!
 //! For more informations please visit the code repository: <https://github.com/MathieuTricoire/l10n>
 //!
@@ -162,16 +164,4 @@ macro_rules! message_args {
             args
         }
     };
-}
-
-#[cfg(doctest)]
-mod test_readme {
-    macro_rules! external_doc_test {
-        ($x:expr) => {
-            #[doc = $x]
-            extern "C" {}
-        };
-    }
-
-    external_doc_test!(include_str!("../README.md"));
 }

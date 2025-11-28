@@ -148,15 +148,11 @@ where
 trait ParseVariables {
     fn locale(&self) -> LanguageIdentifier;
 
-    fn get_pattern_from_key(&self, key: &str) -> Result<&Pattern<&str>, TranslateError>;
-
     fn get_pattern<'a>(
         &self,
         id: &'a str,
         attribute: Option<&'a str>,
     ) -> Result<&Pattern<&str>, TranslateError>;
-
-    fn parse_variables<'a>(&'a self, key: &str) -> Result<HashSet<&'a str>, TranslateError>;
 
     fn parse_pattern_variables<'a>(
         &'a self,
@@ -183,15 +179,6 @@ where
 {
     fn locale(&self) -> LanguageIdentifier {
         self.locales.first().cloned().unwrap_or_default()
-    }
-
-    fn get_pattern_from_key(&self, key: &str) -> Result<&Pattern<&str>, TranslateError> {
-        let (id, attribute) = key
-            .split_once('.')
-            .map(|(id, attribute)| (id, Some(attribute)))
-            .unwrap_or((key, None));
-
-        self.get_pattern(id, attribute)
     }
 
     fn get_pattern<'a>(
@@ -232,51 +219,6 @@ where
         };
 
         Ok(pattern)
-    }
-
-    fn parse_variables<'a>(&'a self, key: &str) -> Result<HashSet<&'a str>, TranslateError> {
-        let mut variables = HashSet::new();
-
-        let (message_id, message_attribute_option) = key
-            .split_once('.')
-            .map(|(message_id, message_attribute)| (message_id, Some(message_attribute)))
-            .unwrap_or((key, None));
-
-        let message = match self.get_message(message_id) {
-            Some(m) => m,
-            None => {
-                return Err(TranslateError::MessageIdNotExists {
-                    id: message_id.to_owned(),
-                    locale: self.locale(),
-                });
-            }
-        };
-
-        let pattern = match message_attribute_option {
-            Some(attr) => match message.get_attribute(attr) {
-                Some(attr) => attr.value(),
-                None => {
-                    return Err(TranslateError::MessageAttributeNotExists {
-                        attribute: attr.to_owned(),
-                        id: message_id.to_owned(),
-                        locale: self.locale(),
-                    });
-                }
-            },
-            None => match message.value() {
-                Some(p) => p,
-                None => {
-                    return Err(TranslateError::MessageIdValueNotExists {
-                        id: message_id.to_owned(),
-                        locale: self.locale(),
-                    });
-                }
-            },
-        };
-
-        self.parse_pattern_variables(pattern, &mut variables)?;
-
-        Ok(variables)
     }
 
     fn parse_pattern_variables<'a>(

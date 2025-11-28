@@ -32,13 +32,13 @@ pub struct Variant<'a> {
 
 #[derive(Clone)]
 pub struct Field<'a> {
-    pub field_input: &'a syn::Field,
     pub member: Member,
     pub ty: &'a Type,
     pub from: Option<&'a Attribute>,
 }
 
-// TODO: I would like to remove Default, either it's a L10nAttribute as a whole or it's not.
+// TODO: I would like to remove Default, either it's a L10nAttribute as a whole
+// or it's not.
 #[derive(Default)]
 pub struct L10nAttribute<'a> {
     pub attribute: Option<&'a Attribute>,
@@ -198,7 +198,6 @@ impl<'a> Field<'a> {
 
     fn from_syn(i: usize, field_input: &'a syn::Field) -> Result<Self> {
         Ok(Field {
-            field_input,
             member: field_input
                 .ident
                 .clone()

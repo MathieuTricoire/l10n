@@ -33,7 +33,9 @@ fn ui() {
         };
 
         for entry in entry_path.read_dir().unwrap() {
-            env::remove_var("L10N_PATH_ENV");
+            unsafe {
+                env::remove_var("L10N_PATH_ENV");
+            }
 
             let entry_path = entry.unwrap().path();
             if let Some(name) = entry_path.file_name().map(|name| name.to_string_lossy()) {
@@ -51,7 +53,9 @@ fn ui() {
                 }
             }
 
-            env::set_var(L10N_CONFIG_FILE, default_config_path.as_os_str());
+            unsafe {
+                env::set_var(L10N_CONFIG_FILE, default_config_path.as_os_str());
+            }
 
             let files: Vec<_> = if entry_path.is_dir() {
                 if entry_path.join("l10n.toml").exists() {
@@ -59,7 +63,9 @@ fn ui() {
                         .unwrap()
                         .join(&entry_path)
                         .join("l10n.toml");
-                    env::set_var(L10N_CONFIG_FILE, config_path.as_os_str());
+                    unsafe {
+                        env::set_var(L10N_CONFIG_FILE, config_path.as_os_str());
+                    }
                 }
 
                 let env_file = entry_path.join(".l10n_path_env");
@@ -67,7 +73,9 @@ fn ui() {
                     let mut f = fs::File::open(env_file).unwrap();
                     let mut s = String::new();
                     f.read_to_string(&mut s).unwrap();
-                    env::set_var("L10N_PATH_ENV", s.trim());
+                    unsafe {
+                        env::set_var("L10N_PATH_ENV", s.trim());
+                    }
                 }
 
                 entry_path

@@ -1,20 +1,17 @@
 use crate::locales::Locales;
 use crate::resource::L10nResource;
 use crate::utils::{for_locales, grammar_number, locales_to_string, values_to_string};
-use fluent_bundle::{bundle::FluentBundle, FluentArgs, FluentResource};
-use fluent_bundle::{FluentError, FluentValue};
+use fluent_bundle::bundle::FluentBundle;
+use fluent_bundle::{FluentArgs, FluentError, FluentResource, FluentValue};
 use fluent_syntax::ast::{Entry, Expression, InlineExpression, Pattern, PatternElement};
 use intl_memoizer::concurrent::IntlLangMemoizer;
 use self_cell::self_cell;
+use std::borrow::Cow;
+use std::collections::{HashMap, HashSet};
 use std::ffi::OsStr;
-use std::fmt;
+use std::fmt::Debug;
 use std::path::{Path, PathBuf};
-use std::{
-    borrow::Cow,
-    collections::{HashMap, HashSet},
-    fmt::Debug,
-    fs, io,
-};
+use std::{fmt, fs, io};
 use thiserror::Error;
 use unic_langid::LanguageIdentifier;
 

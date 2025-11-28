@@ -3,7 +3,7 @@ use l10n::unic_langid::langid;
 use l10n::L10nMessage;
 use std::borrow::Cow;
 
-fn l10n_transform(s: &str) -> Cow<str> {
+fn l10n_transform(s: &str) -> Cow<'_, str> {
     Cow::from(s.replace("Occupée", "OcCuPéE🚫"))
 }
 
